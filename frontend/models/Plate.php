@@ -1,10 +1,9 @@
 <?php
 namespace frontend\models;
 
+use Yii;
 use yii\db\ActiveRecord;
-use frontend\models\Post;
-use frontend\models\Moder;
-use frontend\models\Draft;
+use common\models\User;
 
 class Plate extends ActiveRecord{
 
@@ -59,13 +58,35 @@ class Plate extends ActiveRecord{
                 $far_plate=array('id'=>$v['id'],'name'=>$v['name'],'img'=>$v['img'],'today'=>$v['today'],'totals'=>$v['totals']);
                 unset($plates[$k]);
             }else{
-                $sid[]=$v['id']; //子版块编号
+                $sid[]=$v['id'];
                 if(!empty($v['moders'])){
                     $bz_id[]=$v['moders'][0]['user_id'];
                 }
             }
         }
-        return ['far_plate'=>$far_plate,'bz_id'=>$bz_id,'sid'=>$sid];
+        $redis=Yii::$app->redis;
+        $key='send_'.date('md').'_posts_'.$far_plate['id'];
+        if($redis->exists($key)){
+            $far_plate['today']=$redis->get($key);
+        }else{
+            $far_plate['today']=0;
+            $redis->set($key,0);
+            $redis->expire($key,86400);
+        }
+        $gets=Yii::$app->request->get();
+        if(isset($gets['s'])&&in_array($gets['s'],$sid)){
+            $key1='send_'.date('md').'_posts_'.$gets['s'];
+            if($redis->exists($key1)){
+                $far_plate['today']=$redis->get($key1);
+            }else{
+                $far_plate['today']=0;
+                $redis->set($key1,0);
+                $redis->expire($key1,86400);
+            }
+        }
+        $userModel=new User();
+        $bzs=$userModel->getUsernameFields($bz_id);
+        return ['far_plate'=>$far_plate,'bz_id'=>$bzs,'sid'=>$sid];
     }
 
     /**
@@ -75,13 +96,24 @@ class Plate extends ActiveRecord{
     public function updatePlatePostNum($pid){
         $plates=static::findOne($pid);
         $plates->updateCounters(['totals' =>1]);
+        $redis=Yii::$app->redis;
+        $key='send_'.date('md').'_posts_'.$pid;
+        if($redis->exists($key)){
+            $redis->incr($key);
+        }else{
+            $redis->set($key,0);
+            $redis->expire($key,86400);
+        }
         if($plates->fid){
             $plates=static::findOne($plates->fid);
             $plates->updateCounters(['totals' =>1]);
+            $key1='send_'.date('md').'_posts_'.$plates->id;
+            if($redis->exists($key1)){
+                $redis->incr($key1);
+            }else{
+                $redis->set($key1,0);
+                $redis->expire($key1,86400);
+            }
         }
     }
-
-
-
-
 }

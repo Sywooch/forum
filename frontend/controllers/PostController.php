@@ -4,17 +4,14 @@ namespace frontend\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\data\Pagination;
 use frontend\models\Plate;
 use frontend\models\Post;
 use frontend\models\Sign;
-use common\models\User;
 use frontend\models\Comment;
 use frontend\models\CreateForm;
 use frontend\models\Collection;
 use frontend\models\Star;
 use yii\helpers\Url;
-
 
 class PostController extends Controller{
 
@@ -38,10 +35,11 @@ class PostController extends Controller{
         $PlateModel=new Plate();
         $plates=$PlateModel->getAllSon($id);
         if(empty($plates)){Yii::$app->session->setFlash('warning','无此板块');return $this->goHome();}
+
         $FatherSonArr=$PlateModel->getFatherSon($plates);
         $far_plate=$FatherSonArr['far_plate'];
         $sid=$FatherSonArr['sid'];
-        $bz_id=$FatherSonArr['bz_id'];
+        $bzs=$FatherSonArr['bz_id'];
 
         $gets=Yii::$app->request->get();
         $PostModel=new Post();
@@ -51,12 +49,7 @@ class PostController extends Controller{
 
         $SignModel=new Sign();
         $sign_c=$SignModel->getTodaySign();
-
-        if(isset($bz_id)&&!empty($bz_id)){
-            $bzs=User::find()->select('username')->filterWhere(['id'=>$bz_id])->asArray()->column();
-            $bzs=implode(',',$bzs);
-        }
-        return $this->render('index',['plates'=>$plates,'posts'=>$PostsParams['posts'],'platess'=>$platess,'sign_c'=>$sign_c,'bzs'=>isset($bzs)&&!empty($bzs)?$bzs:'无','far_plate'=>isset($far_plate)?$far_plate:'','id'=>$id,'pagination'=>$PostsParams['pagination'],'o'=>$PostsParams['o'],'f'=>$PostsParams['f'],'s'=>$PostsParams['s'],'t'=>$PostsParams['t']]);
+        return $this->render('index',['plates'=>$plates,'posts'=>$PostsParams['posts'],'platess'=>$platess,'sign_c'=>$sign_c,'bzs'=>!empty($bzs)?$bzs:'无','far_plate'=>isset($far_plate)?$far_plate:'','id'=>$id,'pagination'=>$PostsParams['pagination'],'o'=>$PostsParams['o'],'f'=>$PostsParams['f'],'s'=>$PostsParams['s'],'t'=>$PostsParams['t']]);
     }
 
     public function actionDetail(){
@@ -65,10 +58,12 @@ class PostController extends Controller{
 
         $PostModel=new Post();
         $post=$PostModel->getDetail($gets);
+
         if(empty($post)){Yii::$app->session->setFlash('warning','帖子不存在!');return $this->redirect(Url::home());}
+
         $LoginUserId=Yii::$app->user->id;
 
-        $PostModel->updateView($gets);
+        $PostModel->updateView($gets['id']);
 
         $is_coll=0;
         if($LoginUserId){
@@ -97,7 +92,7 @@ class PostController extends Controller{
     public function actionCreate(){
         $PlateModel=new Plate();
         $plates=$PlateModel->getAll();
-        $models=new CreateForm(['scenario'=>'post']);
+        $models=new CreateForm();
         if($models->load(Yii::$app->request->post())&&$models->createPost()){
             Yii::$app->session->setFlash('success','发表成功!');
             return $this->redirect(Url::home());

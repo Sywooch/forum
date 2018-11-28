@@ -29,8 +29,16 @@ class CreateForm extends Model{
             ['title','valiteTitle'],
             ['content','required','message'=>'请填写内容'],
             ['content','trim'],
-            ['title','string','max'=>10000,'message'=>'标题最多10000个字符'],
+            ['title','string','max'=>10000,'message'=>'内容最多10000个字符'],
             ['content','valiteContent'],
+        ];
+    }
+
+    public function attributeLabels(){
+        return [
+            'plate' => '版区',
+            'title' => '标题',
+            'content' => '内容',
         ];
     }
 
@@ -76,18 +84,11 @@ class CreateForm extends Model{
         return $this->$attribute=$str;
     }
 
-    public function scenarios(){
-        return [
-            'post' => ['plate','title', 'content','author','reply'],
-            'reward' => ['plate','title', 'content','price'],
-        ];
-    }
-
     public function createPost(){
         if(!$this->validate()){return false;}
-        $PostModel=new Post();
-        $PostFrequency=$PostModel->postFrequency(Yii::$app->user->identity);
-        if($PostFrequency!==true){$this->addError('title',$PostFrequency);return false;}
+        //$PostModel=new Post();
+        //$PostFrequency=$PostModel->postFrequency(Yii::$app->user->identity);
+        //if($PostFrequency!==true){$this->addError('title',$PostFrequency);return false;}
         $res=Yii::$app->queue->push(new SendPostJob([
             'score'=>Yii::$app->params['postIntegral'],
             'id'=>Yii::$app->user->id,

@@ -26,7 +26,7 @@ $pathInfo=$request->pathInfo;
                         <div>
                             <div class="uk-panel">
                                 <ul class="uk-nav uk-nav-primary uk-nav-center">
-                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home"><a href="<?= Url::toRoute(['index/index'])?>">首页</a></li>
+                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home"><a href="<?= Url::home()?>">首页</a></li>
                                     <li class="uk-active  menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-20 current_page_item"><a href="<?= Url::toRoute(['plate/index'])?>">板块</a></li>
                                     <?php if(\Yii::$app->user->isGuest){ ?>
                                     <li class=" menu-item menu-item-type-post_type menu-item-object-page"><a href="<?= Url::toRoute(['pass/login'])?>">登陆</a></li>
@@ -67,7 +67,7 @@ $pathInfo=$request->pathInfo;
                         </div>
                         <div class="uk-navbar-center">
                             <ul class="uk-navbar-nav">
-                                <li <?php if($pathInfo==''||$pathInfo=='index/index.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['index/index'])?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">首页</a></li>
+                                <li <?php if($pathInfo==''||$pathInfo=='index/index.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::home()?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">首页</a></li>
                                 <li <?php if($pathInfo=='plate/index.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['plate/index'])?>">板块</a></li>
                                 <li <?php if($pathInfo=='pass/login.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['pass/login'])?>">关于我们</a></li>
                             </ul>

@@ -38,7 +38,7 @@ use yii\helpers\Html;
                     <div class="uk-width-1-1">
                         <span class="uk-margin-small-right" uk-icon="info"></span><a uk-toggle="target: #toggle-usage">附加选项</a>
                         <p id="toggle-usage" hidden aria-hidden="true" class="uk-margin-remove-top uk-text-small">
-                            <label><input class="uk-checkbox" type="checkbox" name="CreateForm[reply]" checked>接受回复通知</label>
+                            <label><input class="uk-checkbox" type="checkbox" name="CreateForm[reply]" checked>接收回复通知</label>
                         </p>
                     </div>
                     <div class="uk-width-1-1 uk-flex">
@@ -89,22 +89,13 @@ use yii\helpers\Html;
 <script type="text/javascript" src="/static/editor/lang/zh-cn/zh-cn.js"></script>
 <script>
     var um = UM.getEditor('content',{
-         imageUrl:"<?= Url::toRoute(['image/upload']) ?>"             //图片上传提交地址
-        ,imagePath:''                     //图片修正地址，引用了fixedImagePath,如有特殊需求，可自行配置
-        ,imageFieldName:"imageFile"                   //图片数据的key,若此处修改，需要在后台对应文件修改对应参数
-        ,toolbar:[
+        imageUrl:"<?= Url::toRoute(['image/upload']) ?>",
+        imagePath:'',
+        imageFieldName:"imageFile",
+        toolbar:[
             'undo redo | bold italic underline strikethrough | forecolor backcolor | removeformat |',
             'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
-            '| justifyleft justifycenter justifyright justifyjustify |',
-            'emotion image | horizontal preview',
-        ]
-    });
-    var ums = UM.getEditor('contents',{
-        toolbar:[
-            'source | undo redo | bold italic underline strikethrough | forecolor backcolor | removeformat |',
-            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
-            '| justifyleft justifycenter justifyright justifyjustify |',
-            'link unlink | emotion image video | horizontal preview',
+            '| justifyleft justifycenter justifyright justifyjustify | emotion image horizontal preview',
         ]
     });
 </script>

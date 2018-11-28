@@ -19,7 +19,9 @@ class SignController extends Controller{
         if(!$id){return ['code'=>0,'msg'=>'请登陆后签到!','data'=>''];}
 
         $sign=new Sign();
+
         $count=$sign->getTodayUserSign($id);
+
         if($count>0){return ['code'=>0,'msg'=>'您今日已签到！','data'=>''];}
 
         $res=$sign->sign($id);

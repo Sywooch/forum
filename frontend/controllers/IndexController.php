@@ -1,13 +1,11 @@
 <?php
 namespace frontend\controllers;
-set_time_limit(0);
-ini_set('memory_limit', '1024M');
+
 use Yii;
 use yii\web\Controller;
 use frontend\models\Post;
 use frontend\models\Plate;
 use frontend\models\Sign;
-use yii\db\Query;
 
 class IndexController extends Controller{
 

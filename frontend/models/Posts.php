@@ -7,7 +7,7 @@ use yii\data\Pagination;
 use common\models\User;
 use yii\helpers\ArrayHelper;
 
-class Post extends ActiveRecord{
+class Posts extends ActiveRecord{
 
     public static function tableName(){
         return '{{%posts}}';

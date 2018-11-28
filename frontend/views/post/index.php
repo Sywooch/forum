@@ -12,7 +12,6 @@ $this->title=$far_plate['name'].'-BBS论坛';
                 <div class="uk-width-expand uk-margin-small-left">
                     <div class="uk-flex">
                         <div class="uk-width-auto"><h4 class="uk-margin-remove-bottom"><?= $far_plate['name'] ?></h4></div>
-                        <!--<div class="uk-width-expand uk-text-small uk-text-muted uk-text-right"><a href="javascript:void(0)" class="collect" onclick="collection(<?/*= $id */?>)">收藏</a></div>-->
                     </div>
                     <div class="uk-text-small">
                         <ul class="uk-subnav uk-margin-small-bottom">
@@ -25,8 +24,7 @@ $this->title=$far_plate['name'].'-BBS论坛';
                         </ul>
                     </div>
                     <div class="uk-text-small uk-text-muted">
-                        <span>今日:</span><span class="uk-margin-min-left"><?= $far_plate['today'] ?></span><span class="uk-margin-min-left">帖子:</span><span class="uk-margin-min-left"><?= $far_plate['totals'] ?></span><span class="uk-margin-min-left uk-visible@m">版主:</span><span class="uk-margin-min-left uk-visible@m"><?= $bzs ?></span>
-                        <!--<div class="uk-width-auto uk-text-small uk-text-muted"></div>-->
+                        <span>今日:</span><span class="uk-margin-min-left"><?= $far_plate['today'] ?></span><span class="uk-margin-min-left">帖子:</span><span class="uk-margin-min-left"><?= $far_plate['totals'] ?></span><?php if(isset($s)&&!empty($s)){ ?><span class="uk-margin-min-left uk-visible@m">版主:</span><span class="uk-margin-min-left uk-visible@m"><?= $bzs ?></span><?php }?>
                     </div>
                 </div>
             </div>

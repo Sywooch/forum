@@ -6,6 +6,7 @@ use yii\db\ActiveRecord;
 use yii\data\Pagination;
 use common\models\User;
 use yii\helpers\ArrayHelper;
+use frontend\jobs\UpadtePostJob;
 
 class Post extends ActiveRecord{
 
@@ -35,26 +36,57 @@ class Post extends ActiveRecord{
             $pag_param['params']['f']=$f;
             $where=$f=='1'?['is_hot'=>1]:['essence'=>1];
         }
-        $counts=$where?self::find()->filterWhere($where)->cache(30)->count():Yii::$app->redis->get('post_counts');
+
+        $counts=$where?self::find()->filterWhere($where)->cache(5)->count():Yii::$app->redis->get('post_counts');
         $pag_param=[
             'defaultPageSize' =>20,
             'totalCount' =>$counts,
         ];
         $pagination = new Pagination($pag_param);
 
-        $posts=$query->select(['id','user_id','plate_id','title','view','comments','essence','is_hot','create_at'])->with(['user','plate'])->filterWhere($where)->offset($pagination->offset)->limit($pagination->limit)->orderBy($OrderBy)->all();
+        $posts=$query->select(['id','user_id','plate_id','title','view','comments','essence','is_hot','create_at'])->with(['user','plate'])->filterWhere($where)->offset($pagination->offset)->limit($pagination->limit)->orderBy($OrderBy)->cache(5)->all();
 
         return ['posts'=>$posts,'pagination'=>$pagination,'o'=>$o,'f'=>$f];
     }
 
     public function getDetail($gets){
-        return static::find()->select(['user_id','plate_id','title','content','file','view','comments','collection','star','essence','is_hot','create_at'])->with('plate','user')->filterWhere(['id'=>$gets['id']])->one();
+        $info=static::find()->select(['user_id','plate_id','title','content','file','comments','essence','is_hot','create_at'])->with('plate','user')->filterWhere(['id'=>$gets['id']])->one();
+        if(!empty($info)){
+            $info->view=$this->getView($gets['id']);
+            $info->collection=$this->getCollection($gets['id']);
+            $info->star=$this->getStar($gets['id']);
+        }
+        return $info;
     }
 
-    public  function updateView($gets){
-        $PostModel=static::findOne($gets['id']);
+    public function updateView($id){
+        $redis=Yii::$app->redis;
+        $key='view_post_'.$id;
+        $redis->incr($key);
+        Yii::$app->queue->push(new UpadtePostJob([
+            'id'=>$id,
+            'type'=>'view',
+            'direction'=>1
+        ]));
+    }
+
+    public function updateViews($id){
+        $PostModel=static::findOne($id);
         $PostModel->view=($PostModel->view)+1;
         $PostModel->save();
+    }
+
+    public function updateCollection($id,$direction){
+        $redis=Yii::$app->redis;
+        $key='collection_post_'.$id;
+
+        $direction==1?$redis->incr($key):$redis->incr($key);
+
+        Yii::$app->queue->push(new UpadtePostJob([
+            'id'=>$id,
+            'type'=>'view',
+            'direction'=>$direction
+        ]));
     }
 
     public function getPostIsExist($postid){
@@ -67,6 +99,33 @@ class Post extends ActiveRecord{
 
     public function getTo($where){
         return static::find()->select('id,user_id,tos')->where($where)->one();
+    }
+
+    public function getView($id){
+        $redis=Yii::$app->redis;
+        $key='view_post_'.$id;
+        if(!$redis->exists($key)){
+            $redis->set($key,0);
+        }
+        return $redis->get($key);
+    }
+
+    public function getCollection($id){
+        $redis=Yii::$app->redis;
+        $key='collection_post_'.$id;
+        if(!$redis->exists($key)){
+            $redis->set($key,0);
+        }
+        return $redis->get($key);
+    }
+
+    public function getStar($id){
+        $redis=Yii::$app->redis;
+        $key='star_post_'.$id;
+        if(!$redis->exists($key)){
+            $redis->set($key,0);
+        }
+        return $redis->get($key);
     }
 
     /**
@@ -112,8 +171,13 @@ class Post extends ActiveRecord{
             $UserPostModel=new UserPost();
             $UserPostModel->updateUserPosts($data['uid']);
 
-            Yii::$app->redis->sadd('send_post_id',$id);
-            Yii::$app->redis->exists('post_counts')?Yii::$app->redis->incr('post_counts'):Yii::$app->redis->set('post_counts',0);
+            $redis=Yii::$app->redis;
+            $redis->sadd('send_post_id',$PostModel->id);
+            $redis->exists('post_counts')?$redis->incr('post_counts'):$redis->set('post_counts',0);
+
+            $redis->set('view_post_'.$PostModel->id,0);
+            $redis->set('collection_post_'.$PostModel->id,0);
+            $redis->set('star_post_'.$PostModel->id,0);
         }
     }
 
@@ -125,7 +189,6 @@ class Post extends ActiveRecord{
         if($PostCounts>=$FrequencyConfig['nums']){return '您所在等级'.$FrequencyConfig['minute'].'分钟内，仅能发帖'.$FrequencyConfig['nums'].'次';}
         return true;
     }
-
 
     /**
      * 帖子和用户一对一
@@ -167,13 +230,10 @@ class Post extends ActiveRecord{
 
     public function getPlatePosts($gets,$sid){
         $query=static::find();
-        $where=array(); //初始化 条件参数
         $where=isset($gets['s'])&&!empty($gets['s'])?['and']:['and',['plate_id'=>$sid]];
-        $order=array(  //初始化排序参数
-            'id'=>SORT_DESC
-        );
-        $o='';
-        if(isset($gets['o'])&&in_array($gets['o'],array(1,2))){
+        $o=ArrayHelper::getValue($gets, 'o','');
+        if(empty($o)){$order=['id'=>SORT_DESC];}
+        if(isset($gets['o'])&&in_array($gets['o'],[1,2])){
             $o=$gets['o'];
             $pag_param['params']['o']=$gets['o'];
             switch($gets['o']){
@@ -186,54 +246,55 @@ class Post extends ActiveRecord{
             }
         }
         $f='';
-        if(isset($gets['f'])&&in_array($gets['f'],array(1,2))){ //热门精华条件
+        if(isset($gets['f'])&&in_array($gets['f'],[1,2])){
             $f=$gets['f'];
             $pag_param['params']['f']=$gets['f'];
             switch($gets['f']){
-                case '1': //热门
+                case '1':
                     $where[]=['a.is_hot'=>1];
                     break;
-                case '2': //精华
+                case '2':
                     $where[]=['a.essence'=>1];
                     break;
             }
         }
         $t='';
-        if(isset($gets['t'])&&in_array($gets['t'],array(1,2,3,4,5))){ //时间条件
+        if(isset($gets['t'])&&in_array($gets['t'],[1,2,3,4,5])){
             $t=$gets['t'];
             $pag_param['params']['t']=$gets['t'];
             switch($gets['t']){
-                case '1': //一天
+                case '1':
                     $where[]=['>=','a.create_at',strtotime("-1 day")];
                     break;
-                case '2': //两天
+                case '2':
                     $where[]=['>=','a.create_at',strtotime("-2 day")];
                     break;
-                case '3': //一周
+                case '3':
                     $where[]=['>=','a.create_at',strtotime("-7 day")];
                     break;
-                case '4': //一个月
+                case '4':
                     $where[]=['>=','a.create_at',strtotime("-1 month")];
                     break;
-                case '5': //三个月
+                case '5':
                     $where[]=['>=','a.create_at',strtotime("-3 month")];
                     break;
             }
         }
         $s='';
-        if(isset($gets['s'])&&is_numeric($gets['s'])){ //子版区条件
+        if(isset($gets['s'])&&is_numeric($gets['s'])){
             $s=$gets['s'];
             $pag_param['params']['s']=$gets['s'];
             $where[]=['plate_id'=>$gets['s']];
         }
-        $pag_param=[  //初始化 分页参数
+        $pag_param=[
             'defaultPageSize' =>20,
-            'totalCount' => $query->alias('a')->filterWhere($where)->count(),
+            'totalCount' => $query->alias('a')->filterWhere($where)->cache(5)->count(),
         ];
         $pagination = new Pagination($pag_param);
 
-        $posts = $query->alias('a')->select('a.id,a.user_id,a.plate_id,a.title,a.view,a.comments,a.essence,a.is_hot,a.create_at')->joinWith(['user','plate'])->filterWhere($where)->orderBy($order)->offset($pagination->offset)->limit($pagination->limit)->asArray()->cache(120)->all();
+        $posts = $query->alias('a')->select('a.id,a.user_id,a.plate_id,a.title,a.view,a.comments,a.essence,a.is_hot,a.create_at')->joinWith(['user','plate'])->filterWhere($where)->orderBy($order)->offset($pagination->offset)->limit($pagination->limit)->asArray()->cache(5)->all();
 
         return ['posts'=>$posts,'pagination'=>$pagination,'o'=>$o,'f'=>$f,'s'=>$s,'t'=>$t];
     }
+
 }

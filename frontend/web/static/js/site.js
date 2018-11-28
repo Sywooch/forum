@@ -1,4 +1,5 @@
-var url='http://www.yiitest.com/';
+var url=window.location.host;
+url="http://"+url+"/";
 var report;
 var tos=GetQueryString("to");
 if(tos!=null && tos.toString().length>=1) {

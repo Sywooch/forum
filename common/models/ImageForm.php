@@ -4,18 +4,17 @@ namespace common\models;
 use Yii;
 use yii\base\Model;
 use yii\web\UploadedFile;
-use common\models\User;
 use yii\imagine\Image;
 
 class ImageForm extends Model{
 
     public $imageFile;
-    public $types=['avatar','images',];
-    public $LocalLocation;
+    public $types=['avatar','images'];
+    private $LocalLocation;
 
     public function rules(){
         return [
-            ['imageFile', 'image', 'extensions' => 'png,jpg,jpeg,gif','mimeTypes'=>'image/png,image/jpeg,image/gif','maxSize'=>1024*500,'message'=>'图像大小必须为500KB内'],
+            ['imageFile','image','extensions' =>'png,jpg,jpeg,gif','mimeTypes'=>'image/png,image/jpeg,image/gif','maxSize'=>1024*300],
         ];
     }
 
