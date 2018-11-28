@@ -11,6 +11,7 @@ use frontend\models\Comment;
 use frontend\models\CreateForm;
 use frontend\models\Collection;
 use frontend\models\Star;
+use frontend\models\UserPost;
 use yii\helpers\Url;
 
 class PostController extends Controller{
@@ -76,7 +77,8 @@ class PostController extends Controller{
             $is_star=$StarModel->getUserPostStar($LoginUserId,$gets['id']);
         }
 
-        $z_count=$PostModel->getUserPostCount($LoginUserId);
+        $userPostModel=new UserPost();
+        $z_count=$userPostModel->getUserPostNum($LoginUserId);
 
         $CommentModel=new Comment();
         $CommentResult=$CommentModel->getPostComment($gets);

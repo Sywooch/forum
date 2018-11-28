@@ -16,9 +16,11 @@ class UpadtePostJob extends BaseObject implements \yii\queue\JobInterface{
             case 'view':
                 $postModel->updateViews($this->id);
                 break;
-            case '':
+            case 'collection':
+                $postModel->updateCollections($this->id,$this->direction);
                 break;
-            case '':
+            case 'star':
+                $postModel->updateStars($this->id,$this->direction);
                 break;
         }
     }

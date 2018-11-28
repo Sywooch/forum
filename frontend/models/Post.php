@@ -80,13 +80,38 @@ class Post extends ActiveRecord{
         $redis=Yii::$app->redis;
         $key='collection_post_'.$id;
 
-        $direction==1?$redis->incr($key):$redis->incr($key);
+        $direction==1?$redis->incr($key):$redis->decr($key);
 
         Yii::$app->queue->push(new UpadtePostJob([
             'id'=>$id,
-            'type'=>'view',
+            'type'=>'collection',
             'direction'=>$direction
         ]));
+    }
+
+    public function updateCollections($id,$direction){
+        $PostModel=static::findOne($id);
+        $PostModel->collection=$direction==1?($PostModel->collection)+1:($PostModel->collection)-1;
+        $PostModel->save();
+    }
+
+    public function updateStar($id,$direction){
+        $redis=Yii::$app->redis;
+        $key='star_post_'.$id;
+
+        $direction==1?$redis->incr($key):$redis->decr($key);
+
+        Yii::$app->queue->push(new UpadtePostJob([
+            'id'=>$id,
+            'type'=>'star',
+            'direction'=>$direction
+        ]));
+    }
+
+    public function updateStars($id,$direction){
+        $PostModel=static::findOne($id);
+        $PostModel->star=$direction==1?($PostModel->star)+1:($PostModel->star)-1;
+        $PostModel->save();
     }
 
     public function getPostIsExist($postid){

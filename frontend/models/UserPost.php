@@ -19,5 +19,9 @@ class UserPost extends ActiveRecord{
     }
 
 
+    public function getUserPostNum($uid){
+        return static::find()->where(['user_id'=>$uid])->count();
+    }
+
 
 }
