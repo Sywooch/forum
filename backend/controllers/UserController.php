@@ -1,5 +1,6 @@
 <?php
 namespace backend\controllers;
+
 use Yii;
 use yii\web\Controller;
 use common\models\User;
@@ -11,63 +12,25 @@ class UserController extends Controller{
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
             $post=Yii::$app->request->post();
-            //获取所有列表
             $where=[];
             if(isset($post['name'])&&!empty($post['name'])){
                 $where=['or',['email'=>$post['name']],['username'=>$post['name']]];
-                $pagion_param['param']['name']=$post['name'];
             }
-
             $query=User::find();
             $count=$query->filterWhere($where)->count();
 
-            $pagion_param=[
+            $pagination=new Pagination([
                 'defaultPageSize' =>isset($post['limit'])?$post['limit']:10,
                 'totalCount' =>$count,
-            ];
-            $pagination=new Pagination($pagion_param);
+                'params'=>['page'=>isset($post['page'])?$post['page']:1]
+            ]);
 
             $list=$query->select('id,email,username,city,sex,level,experience,integral,groups,status,ip,created_at')->filterWhere($where)->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
-            foreach($list as $k=>$v){
-                $list[$k]['username']=$v['username']?$v['username']:'';
-                $list[$k]['city']=$v['city']?$v['city']:'';
-                $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i",$v['created_at']):'';
-                switch($v['groups']){
-                    case '0':
-                        $list[$k]['groups']='普通用户';
-                        break;
-                    case "1":
-                        $list[$k]['groups']='管理员';
-                        break;
-                }
-                switch($v['status']){
-                    case '1':
-                        $list[$k]['status']='待激活';
-                        break;
-                    case "2":
-                        $list[$k]['status']='禁用';
-                        break;
-                    case "3":
-                        $list[$k]['status']='暂停';
-                        break;
-                    case "10":
-                        $list[$k]['status']='正常';
-                        break;
-                }
-                switch($v['sex']){
-                    case '1':
-                        $list[$k]['sex']='男';
-                        break;
-                    case '2':
-                        $list[$k]['sex']='女';
-                        break;
-                }
-            }
+            $list=$this->conversion($list);
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-
             return ['code'=>0,'count'=>$count,'data'=>$list?$list:''];
         }
-        return $this->render('list');
+        return $this->render('list',['title'=>'用户管理']);
     }
 
 
@@ -113,8 +76,41 @@ class UserController extends Controller{
         return $this->renderPartial('edit',['model'=>$model,'user'=>$user]);
     }
 
-
-
-
+    public function conversion($list){
+        foreach($list as $k=>$v){
+            $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i",$v['created_at']):'';
+            switch($v['groups']){
+                case '0':
+                    $list[$k]['groups']='普通用户';
+                    break;
+                case "1":
+                    $list[$k]['groups']='管理员';
+                    break;
+            }
+            switch($v['status']){
+                case '1':
+                    $list[$k]['status']='待激活';
+                    break;
+                case "2":
+                    $list[$k]['status']='禁用';
+                    break;
+                case "3":
+                    $list[$k]['status']='暂停';
+                    break;
+                case "10":
+                    $list[$k]['status']='正常';
+                    break;
+            }
+            switch($v['sex']){
+                case '1':
+                    $list[$k]['sex']='男';
+                    break;
+                case '2':
+                    $list[$k]['sex']='女';
+                    break;
+            }
+        }
+        return $list;
+    }
 
 }

@@ -1,7 +1,3 @@
-<?php
-?>
-
 <div class="layui-footer">
-    <!-- 底部固定区域 -->
-    © layui.com - 底部固定区域
+    © 论坛管理后台
 </div>

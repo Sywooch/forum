@@ -17,7 +17,8 @@ class CommentController extends Controller{
         $model=new CommentForm();
         $datas=$model->getFormData($data);
         if(!($model->load($datas)&&$model->validate())){
-            if(empty($model->getErrors())){return ['code'=>0,'msg'=>'网络错误请重试!','data'=>''];}
+            $errors=$model->getErrors();
+            if(empty($errors)){return ['code'=>0,'msg'=>'网络错误请重试!','data'=>''];}
             foreach($model->getErrors() as $v){
                 $msg=$v[0];
             }
@@ -34,13 +35,8 @@ class CommentController extends Controller{
             $Buser=$CommentDetail;
             $PostId=$CommentDetail['post_id'];
         }
-        //限制用户评论频率
         $frequency=$CommentModel->commentFrequency(Yii::$app->user->identity,$PostId);
-
-
-
-
-        if(!$frequency){return ['code'=>0,'msg'=>'发帖过于频繁!','data'=>''];}
+        if($frequency!==true){return ['code'=>0,'msg'=>$frequency,'data'=>''];}
         $PostExist=$PostModel->getPostIsExist($PostId);
         if(!$PostExist){return ['code'=>0,'msg'=>'评论帖子不存在','data'=>''];}
         $str=$CommentModel->getAjaxContent($id,$data,$PostExist['tos'],$Buser);

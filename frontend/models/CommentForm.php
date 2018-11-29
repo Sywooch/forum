@@ -25,6 +25,14 @@ class CommentForm extends Model{
         ];
     }
 
+    public function attributeLabels(){
+        return [
+            'o'=>'评论帖子',
+            'c'=>'评论内容',
+            't'=>'评论对象',
+        ];
+    }
+
     public function valiteContent($attribute){
         if(strpos($this->c,'<script>')!==false){
             $this->addError($attribute,'评论内容不得含有特殊字符');
@@ -38,6 +46,9 @@ class CommentForm extends Model{
             return $this->addError($attribute,'评论内容不得含有特殊字符');
         }
         if(strpos($this->c,"'")!==false){
+            return $this->addError($attribute,'评论内容不得含有特殊字符');
+        }
+        if(strpos($this->c,"<iframe>")!==false){
             return $this->addError($attribute,'评论内容不得含有特殊字符');
         }
         if(strpos($this->c,'%')!==false){

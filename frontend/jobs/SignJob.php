@@ -11,6 +11,6 @@ class SignJob extends BaseObject implements \yii\queue\JobInterface{
 
     public function execute($queue){
        $user=new User();
-       $user->addExperience($this->uid,$this->val);
+       $user->addIntegral($this->uid,$this->val);
     }
 }

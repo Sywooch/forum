@@ -31,21 +31,16 @@ return [
                 ],
             ],
         ],
-        'authManager' => [
+        'authManager'=>[
             'class' => 'yii\rbac\DbManager',
-            // 'cache' => 'cache',//如果要缓存RBAC项目层次结构，请取消注释
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
         ],
-        */
     ],
     'params' => $params,
 ];

@@ -48,6 +48,8 @@ return [
             'password' => 'guest',
             'queueName' => 'queue',
             'driver' => yii\queue\amqp_interop\Queue::ENQUEUE_AMQP_LIB,
+            'ttr'=>60,
+            'attempts'=>0,
         ],
         'elasticsearch'=>[
             'class' => 'yii\elasticsearch\Connection',

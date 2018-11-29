@@ -13,10 +13,10 @@ use frontend\models\Collection;
 use frontend\models\UpdateForm;
 use frontend\models\Sign;
 use frontend\models\Level;
+use yii\helpers\Url;
 
 class UserController extends Controller{
 
-    /*个人主页*/
     public function actionIndex($id,$t='user'){
         $all_params=array();
         $all_params['id']=$id;
@@ -36,19 +36,18 @@ class UserController extends Controller{
         $all_params['user_info']=$user_info;
         $all_params['appellation']=$LevelInfo['appellation'];
 
-
         switch($t){
             case 'user':
-                $user_info->updateCounters(['view'=>1]);
+                if(Yii::$app->user->identity!=$id){$user_info->updateCounters(['view'=>1]);}
                 $all_params['counts']=Post::find()->filterWhere(['user_id'=>$id])->cache(10)->count();
                 $all_params['countss']=Comment::find()->filterWhere(['user_id'=>$id])->cache(10)->count();
             break;
-            case 'send': //发帖
+            case 'send':
                 $query=Post::find();
                 $counts=$query->filterWhere(['user_id'=>$id])->cache(30)->count();
                 $pag_param['params']['t']=$t;
                 $pag_param['params']['id']=$id;
-                $pag_param=[  //初始化 分页参数
+                $pag_param=[
                     'defaultPageSize' =>20,
                     'totalCount' =>$counts,
                 ];
@@ -58,12 +57,12 @@ class UserController extends Controller{
                 $all_params['pagination']=$pagination;
                 $all_params['counts']=$counts;
             break;
-            case 'reply': //回帖
+            case 'reply':
                 $query=Comment::find();
                 $counts=$query->filterWhere(['and','user_id'=>$id,'comm_yobj'=>1])->cache(30)->count();
                 $pag_param['params']['t']=$t;
                 $pag_param['params']['id']=$id;
-                $pag_param=[  //初始化 分页参数
+                $pag_param=[
                     'defaultPageSize' =>20,
                     'totalCount' =>$counts,
                 ];
@@ -74,17 +73,17 @@ class UserController extends Controller{
                 $all_params['pagination']=$pagination;
                 $all_params['counts']=$counts;
                 break;
-            case 'site': //站内消息
-                if(\Yii::$app->user->id!=$id){
-                    \Yii::$app->session->setFlash('danger','您没有权限访问!');
-                    return $this->redirect('index.php?r=user/index&id='.$id);
+            case 'site':
+                if(Yii::$app->user->id!=$id){
+                    Yii::$app->session->setFlash('danger','您没有权限访问!');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
                 $query=Site::find();
                 $counts=$query->filterWhere(['user_id'=>$id])->count();
                 $counts_v=$query->filterWhere(['user_id'=>$id,'is_view'=>0])->cache(30)->count();
                 $pag_param['params']['t']=$t;
                 $pag_param['params']['id']=$id;
-                $pag_param=[  //初始化 分页参数
+                $pag_param=[
                     'defaultPageSize' =>20,
                     'totalCount' =>$counts,
                 ];
@@ -101,22 +100,21 @@ class UserController extends Controller{
                 $all_params['counts_v']=$counts_v;
                 break;
             case 'private':
-                if(\Yii::$app->user->id!=$id){
-                    \Yii::$app->session->setFlash('danger','您没有权限访问!');
-                    return $this->redirect('index.php?r=user/index&id='.$id);
+                if(Yii::$app->user->id!=$id){
+                    Yii::$app->session->setFlash('danger','您没有权限访问!');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
                 $query=Prive::find();
                 $counts=$query->filterWhere(['user_id'=>$id])->cache(30)->count();
                 $counts_v=$query->filterWhere(['user_id'=>$id,'is_view'=>0])->cache(30)->count();
                 $pag_param['params']['t']=$t;
                 $pag_param['params']['id']=$id;
-                $pag_param=[  //初始化 分页参数
+                $pag_param=[
                     'defaultPageSize' =>3,
                     'totalCount' =>$counts,
                 ];
                 $pagination = new Pagination($pag_param);
                 $sites=$query->alias('a')->select('a.id,a.users_id,a.content,a.is_view,a.created_t')->joinWith('user')->filterWhere(['a.user_id'=>$id])->offset($pagination->offset)->limit($pagination->limit)->asArray()->cache(30)->all();
-                //更新未读
                 if(!empty($sites)){
                     foreach($sites as $v){
                         $view_list[]=$v['id'];
@@ -129,15 +127,15 @@ class UserController extends Controller{
                 $all_params['counts_v']=$counts_v;
                 break;
             case 'collection':
-                if(\Yii::$app->user->id!=$id){
-                    \Yii::$app->session->setFlash('danger','您没有权限访问!');
-                    return $this->redirect('index.php?r=user/index&id='.$id);
+                if(Yii::$app->user->id!=$id){
+                    Yii::$app->session->setFlash('danger','您没有权限访问!');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
                 $query=Collection::find();
                 $counts=$query->filterWhere(['user_id'=>$id])->cache(30)->count();
                 $pag_param['params']['t']=$t;
                 $pag_param['params']['id']=$id;
-                $pag_param=[  //初始化 分页参数
+                $pag_param=[
                     'defaultPageSize' =>20,
                     'totalCount' =>$counts,
                 ];
@@ -148,9 +146,9 @@ class UserController extends Controller{
                 $all_params['counts']=$counts;
                 break;
             case 'set':
-                if(\Yii::$app->user->id!=$id){
-                    \Yii::$app->session->setFlash('danger','您没有权限访问!');
-                    return $this->redirect('index.php?r=user/index&id='.$id);
+                if(Yii::$app->user->id!=$id){
+                    Yii::$app->session->setFlash('danger','您没有权限访问!');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
                 $user_info=User::find()->select('id,email,username,avatar,sex,city,intro')->filterWhere(['id'=>$id])->asArray()->one();
                 $all_params['posts']=$user_info;
@@ -158,8 +156,8 @@ class UserController extends Controller{
             case 'pass_reset':
                 $model=new UpdateForm(['scenario'=>'pass']);
                 if($model->load(\Yii::$app->request->post())&&$model->save(\Yii::$app->user->id)){
-                    \Yii::$app->session->setFlash('success','修改成功');
-                    return $this->redirect('index.php?r=user/index&id='.\Yii::$app->user->id.'&t=set');
+                    Yii::$app->session->setFlash('success','修改成功');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
                 $all_params['model']=$model;
                break;
@@ -171,8 +169,8 @@ class UserController extends Controller{
     public function actionUpdate($id){
         $model=new UpdateForm();
         if($model->load(\Yii::$app->request->post())&&$model->save($id)){
-            \Yii::$app->session->setFlash('success','修改成功');
-            return $this->redirect('index.php?r=user/index&id='.$id.'&t=set');
+            Yii::$app->session->setFlash('success','修改成功');
+            return $this->redirect(Url::toRoute(['user/index','id'=>$id,'t'=>'set']));
         }
         return $this->render('index',['id'=>$id,'type'=>'set','model'=>$model]);
     }

@@ -44,7 +44,7 @@ class PostController extends Controller{
 
         $gets=Yii::$app->request->get();
         $PostModel=new Post();
-        $PostsParams=$PostModel->getPlatePosts($gets,$sid);
+        $PostsParams=$PostModel->getPlatePosts($gets,$sid,$far_plate['id']);
 
         $platess=$PlateModel->getRecommend();
 

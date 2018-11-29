@@ -3,33 +3,6 @@ layui.use(['element','table','form'], function(){
     var element = layui.element;
     var table = layui.table;
     var form=layui.form;
-    //方法级渲染
-    table.render({
-        elem: '#user_table'
-        ,url: url+'user/list'
-        ,cols: [[
-            {checkbox: true, fixed: true}
-            ,{field:'id',title:'编号',width:80,sort:true,fixed:true}
-            ,{field:'email',title:'邮箱',width:230}
-            ,{field:'username', title:'昵称',width:200, sort: true}
-            ,{field:'city', title: '所在地', width:120, sort: true}
-            ,{field:'sex', title: '性别', width:80}
-            ,{field:'level', title: '等级', width:80, sort: true}
-            ,{field:'experience', title: '经验', sort: true, width:80}
-            ,{field:'integral', title: '积分', sort: true, width:80}
-            ,{field:'groups', title: '用户组', sort: true, width:80}
-            ,{field:'status', title: '状态', width:80}
-            ,{field:'ip', title: 'IP', sort: true, width:135}
-            ,{field:'created_at', title: '注册时间',sort:true,width:150}
-            ,{fixed:'right',title:'操作',align:'center',toolbar:'#userBar'}
-        ]]
-        ,id: 'userReload'
-        ,page:true
-        ,height:'full-200'
-        ,text:'暂无数据'
-        ,where:{_csrf:s}
-        ,method:'post'
-    });
 
     //方法级渲染 帖子列表
     table.render({

@@ -315,6 +315,11 @@ class User extends ActiveRecord implements IdentityInterface{
         return $users->save()?true:false;
     }
 
+    public function addIntegral($uid,$val){
+        $users=static::findOne(['id'=>$uid]);
+        $users->updateCounters(['integral' =>$val]);
+    }
+
     public function getUsernameFields($bz_id){
         $userNameList=static::find()->select('username')->filterWhere(['id'=>$bz_id])->asArray()->cache(10)->column();
         return implode(',',$userNameList);

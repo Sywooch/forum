@@ -105,7 +105,7 @@ class Comment extends ActiveRecord{
     }
 
     public function getPostComment($gets){
-        $PageSize=10;
+        $PageSize=20;
         $where=['and',['post_id'=>$gets['id']]];
         if(isset($gets['author'])&&is_numeric($gets['author'])){
             $where[]=array('user_id'=>$gets['author']);
@@ -130,7 +130,7 @@ class Comment extends ActiveRecord{
         $FrequencyModel=new Frequency();
         $FrequencyConfig=$FrequencyModel->getCommentFrequency($user->level);
         $StartTime=time()-($FrequencyConfig['minute']*60);
-        $PostCounts=static::find()->where(['and',['=','user_id',$user->id],['>=','create_at',$StartTime,'post_id'=>$PostId]])->count();
+        $PostCounts=static::find()->where(['and',['=','user_id',$user->id],['>=','create_at',$StartTime],['=','post_id',$PostId]])->count();
         if($PostCounts>=$FrequencyConfig['nums']){return '您所在等级'.$FrequencyConfig['minute'].'分钟内，仅能评论'.$FrequencyConfig['nums'].'次';}
         return true;
     }

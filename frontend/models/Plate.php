@@ -41,14 +41,18 @@ class Plate extends ActiveRecord{
     }
 
     public function getAllSon($id){
-        $result=static::find()->alias('a')->select('a.id,a.fid,a.name,a.img,a.today,a.totals')->JoinWith('moders')->filterWhere(['or',['a.id'=>$id],['a.fid'=>$id]])->asArray()->cache(60)->all();
+        $result=static::find()->alias('a')->select('a.id,a.fid,a.name,a.img,a.today,a.totals')->with('moders')->filterWhere(['or',['a.id'=>$id],['a.fid'=>$id]])->asArray()->cache(60)->all();
         if(!empty($result)){
             if(count($result)==1){
                 $id=$result[0]['fid'];
-                $result=static::find()->alias('a')->select('a.id,a.fid,a.name,a.img,a.today,a.totals')->JoinWith('moders')->filterWhere(['or',['a.id'=>$id],['a.fid'=>$id]])->asArray()->cache(60)->all();
+                $result=static::find()->alias('a')->select('a.id,a.fid,a.name,a.img,a.today,a.totals')->with('moders')->filterWhere(['or',['a.id'=>$id],['a.fid'=>$id]])->asArray()->cache(60)->all();
             }
         }
         return $result;
+    }
+
+    public function getPlateTotals($id){
+        return static::find()->select('totals')->where(['id'=>$id])->cache(5)->scalar();
     }
 
     public function getFatherSon($plates){

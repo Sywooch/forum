@@ -18,10 +18,8 @@ class UserPost extends ActiveRecord{
         $UserPostModel->updateCounters(['post_num' =>1]);
     }
 
-
     public function getUserPostNum($uid){
         return static::find()->where(['user_id'=>$uid])->count();
     }
-
 
 }

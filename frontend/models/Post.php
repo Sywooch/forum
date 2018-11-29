@@ -7,6 +7,7 @@ use yii\data\Pagination;
 use common\models\User;
 use yii\helpers\ArrayHelper;
 use frontend\jobs\UpadtePostJob;
+use frontend\models\Plate;
 
 class Post extends ActiveRecord{
 
@@ -50,7 +51,7 @@ class Post extends ActiveRecord{
     }
 
     public function getDetail($gets){
-        $info=static::find()->select(['user_id','plate_id','title','content','file','comments','essence','is_hot','create_at'])->with('plate','user')->filterWhere(['id'=>$gets['id']])->one();
+        $info=static::find()->select(['user_id','plate_id','title','content','file','comments','essence','is_hot','create_at'])->with('plate','user')->filterWhere(['id'=>$gets['id']])->cache(600)->one();
         if(!empty($info)){
             $info->view=$this->getView($gets['id']);
             $info->collection=$this->getCollection($gets['id']);
@@ -253,7 +254,7 @@ class Post extends ActiveRecord{
         return $this->hasMany(Star::className(),['post_id'=>'id']);
     }
 
-    public function getPlatePosts($gets,$sid){
+    public function getPlatePosts($gets,$sid,$fid){
         $query=static::find();
         $where=isset($gets['s'])&&!empty($gets['s'])?['and']:['and',['plate_id'=>$sid]];
         $o=ArrayHelper::getValue($gets, 'o','');
@@ -263,10 +264,10 @@ class Post extends ActiveRecord{
             $pag_param['params']['o']=$gets['o'];
             switch($gets['o']){
                 case '1':
-                    $order['a.view']=SORT_DESC;
+                    $order['view']=SORT_DESC;
                     break;
                 case '2':
-                    $order['a.comments']=SORT_DESC;
+                    $order['comments']=SORT_DESC;
                     break;
             }
         }
@@ -276,10 +277,10 @@ class Post extends ActiveRecord{
             $pag_param['params']['f']=$gets['f'];
             switch($gets['f']){
                 case '1':
-                    $where[]=['a.is_hot'=>1];
+                    $where[]=['is_hot'=>1];
                     break;
                 case '2':
-                    $where[]=['a.essence'=>1];
+                    $where[]=['essence'=>1];
                     break;
             }
         }
@@ -289,19 +290,19 @@ class Post extends ActiveRecord{
             $pag_param['params']['t']=$gets['t'];
             switch($gets['t']){
                 case '1':
-                    $where[]=['>=','a.create_at',strtotime("-1 day")];
+                    $where[]=['>=','create_at',strtotime("-1 day")];
                     break;
                 case '2':
-                    $where[]=['>=','a.create_at',strtotime("-2 day")];
+                    $where[]=['>=','create_at',strtotime("-2 day")];
                     break;
                 case '3':
-                    $where[]=['>=','a.create_at',strtotime("-7 day")];
+                    $where[]=['>=','create_at',strtotime("-7 day")];
                     break;
                 case '4':
-                    $where[]=['>=','a.create_at',strtotime("-1 month")];
+                    $where[]=['>=','create_at',strtotime("-1 month")];
                     break;
                 case '5':
-                    $where[]=['>=','a.create_at',strtotime("-3 month")];
+                    $where[]=['>=','create_at',strtotime("-3 month")];
                     break;
             }
         }
@@ -311,13 +312,19 @@ class Post extends ActiveRecord{
             $pag_param['params']['s']=$gets['s'];
             $where[]=['plate_id'=>$gets['s']];
         }
+        if(!isset($gets['f'])||empty($gets['f'])){
+            $plateModel=new Plate();
+            $count=$plateModel->getPlateTotals(isset($gets['s'])&&is_numeric($gets['s'])?$gets['s']:$fid);
+        }else{
+            $count=$query->filterWhere($where)->count();
+        }
         $pag_param=[
             'defaultPageSize' =>20,
-            'totalCount' => $query->alias('a')->filterWhere($where)->cache(5)->count(),
+            'totalCount' =>$count,
         ];
         $pagination = new Pagination($pag_param);
 
-        $posts = $query->alias('a')->select('a.id,a.user_id,a.plate_id,a.title,a.view,a.comments,a.essence,a.is_hot,a.create_at')->joinWith(['user','plate'])->filterWhere($where)->orderBy($order)->offset($pagination->offset)->limit($pagination->limit)->asArray()->cache(5)->all();
+        $posts = $query->select('id,user_id,plate_id,title,view,comments,essence,is_hot,create_at')->with(['user','plate'])->filterWhere($where)->orderBy($order)->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
 
         return ['posts'=>$posts,'pagination'=>$pagination,'o'=>$o,'f'=>$f,'s'=>$s,'t'=>$t];
     }
