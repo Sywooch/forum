@@ -10,25 +10,24 @@ use backend\models\UupdateForm;
 class UserController extends Controller{
 
     public function actionList(){
-        if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
-            $post=Yii::$app->request->post();
+        if(Yii::$app->request->isAjax){
+            $get=Yii::$app->request->get();
             $where=[];
-            if(isset($post['name'])&&!empty($post['name'])){
-                $where=['or',['email'=>$post['name']],['username'=>$post['name']]];
+            if(isset($get['name'])&&!empty($get['name'])){
+                $where=['or',['email'=>$get['name']],['username'=>$get['name']]];
             }
             $query=User::find();
             $count=$query->filterWhere($where)->count();
 
             $pagination=new Pagination([
-                'defaultPageSize' =>isset($post['limit'])?$post['limit']:10,
+                'defaultPageSize' =>isset($get['limit'])?$get['limit']:20,
                 'totalCount' =>$count,
-                'params'=>['page'=>isset($post['page'])?$post['page']:1]
             ]);
 
             $list=$query->select('id,email,username,city,sex,level,experience,integral,groups,status,ip,created_at')->filterWhere($where)->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
             $list=$this->conversion($list);
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-            return ['code'=>0,'count'=>$count,'data'=>$list?$list:''];
+            return ['code'=>0,'msg'=>'数据如下','count'=>$count,'data'=>$list?$list:[]];
         }
         return $this->render('list',['title'=>'用户管理']);
     }
@@ -41,10 +40,10 @@ class UserController extends Controller{
         Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
         $post=Yii::$app->request->post();
         if(!isset($post['id'])||empty($post['id'])){
-            return ['code'=>0,'info'=>'请选择修改数据','data'=>[]];
+            return ['code'=>1,'info'=>'请选择修改数据','data'=>[]];
         }
         $res=User::updateAll(['status'=>'2'],['id'=>$post['id']]);
-        return ['code'=>0,'info'=>$res?'操作成功':'操作失败','data'=>[]];
+        return ['code'=>$res?0:1,'info'=>$res?'操作成功':'操作失败','data'=>[]];
     }
 
     /*
@@ -78,7 +77,7 @@ class UserController extends Controller{
 
     public function conversion($list){
         foreach($list as $k=>$v){
-            $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i",$v['created_at']):'';
+            $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i:s",$v['created_at']):'';
             switch($v['groups']){
                 case '0':
                     $list[$k]['groups']='普通用户';
