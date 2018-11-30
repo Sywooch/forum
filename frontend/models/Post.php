@@ -216,6 +216,21 @@ class Post extends ActiveRecord{
         return true;
     }
 
+    public function deletePost($id){
+        comment::deleteAll(['post_id'=>$id]);
+        $postModel=static::findOne(['id'=>$id]);
+        $plateId=$postModel->plate_id;
+        $userId=$postModel->user_id;
+        $postModel->delete();
+        $plateModel=Plate::findOne(['id'=>$plateId]);
+        $plateModel->updateCounters(['totals'=>-1]);
+        $pModel=Plate::findOne(['id'=>$plateModel->fid]);
+        $pModel->updateCounters(['totals'=>-1]);
+        Yii::$app->redis->srem('send_post_id',$id);
+        $userPostModel=UserPost::findOne(['user_id'=>$userId]);
+        $userPostModel->updateCounters(['post_num'=>-1]);
+    }
+
     /**
      * 帖子和用户一对一
      */

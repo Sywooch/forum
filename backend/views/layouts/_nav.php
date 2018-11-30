@@ -19,6 +19,14 @@ use yii\helpers\Url;
                     <dd><a href="<?= Url::toRoute(['post/list']) ?>">帖子列表</a></dd>
                 </dl>
             </li>
+
+            <li class="layui-nav-item">
+                <a href="javascript:;">版区管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="<?= Url::toRoute(['plate/list']) ?>">版区列表</a></dd>
+                </dl>
+            </li>
+
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">权限管理</a>
                 <dl class="layui-nav-child">
@@ -27,8 +35,6 @@ use yii\helpers\Url;
                     <dd><a href="<?= Url::toRoute(['post/list']) ?>">管理员列表</a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item"><a href="">云市场</a></li>
-            <li class="layui-nav-item"><a href="">发布商品</a></li>
         </ul>
     </div>
 </div>

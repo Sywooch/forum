@@ -76,37 +76,39 @@ class UserController extends Controller{
     }
 
     public function conversion($list){
-        foreach($list as $k=>$v){
-            $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i:s",$v['created_at']):'';
-            switch($v['groups']){
-                case '0':
-                    $list[$k]['groups']='普通用户';
-                    break;
-                case "1":
-                    $list[$k]['groups']='管理员';
-                    break;
-            }
-            switch($v['status']){
-                case '1':
-                    $list[$k]['status']='待激活';
-                    break;
-                case "2":
-                    $list[$k]['status']='禁用';
-                    break;
-                case "3":
-                    $list[$k]['status']='暂停';
-                    break;
-                case "10":
-                    $list[$k]['status']='正常';
-                    break;
-            }
-            switch($v['sex']){
-                case '1':
-                    $list[$k]['sex']='男';
-                    break;
-                case '2':
-                    $list[$k]['sex']='女';
-                    break;
+        if(!empty($list)){
+            foreach($list as $k=>$v){
+                $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i:s",$v['created_at']):'';
+                switch($v['groups']){
+                    case '0':
+                        $list[$k]['groups']='普通用户';
+                        break;
+                    case "1":
+                        $list[$k]['groups']='管理员';
+                        break;
+                }
+                switch($v['status']){
+                    case '1':
+                        $list[$k]['status']='待激活';
+                        break;
+                    case "2":
+                        $list[$k]['status']='禁用';
+                        break;
+                    case "3":
+                        $list[$k]['status']='暂停';
+                        break;
+                    case "10":
+                        $list[$k]['status']='正常';
+                        break;
+                }
+                switch($v['sex']){
+                    case '1':
+                        $list[$k]['sex']='男';
+                        break;
+                    case '2':
+                        $list[$k]['sex']='女';
+                        break;
+                }
             }
         }
         return $list;

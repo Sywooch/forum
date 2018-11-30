@@ -26,12 +26,11 @@ AppAsset::register($this);
     <?= $this->render('_nav') ?>
 
     <div class="layui-body">
-        <!-- 内容主体区域 -->
+
         <div style="padding: 15px;"><?= $content ?></div>
     </div>
-    <!--底部-->
-    <?= $this->render('_footer') ?>
 
+    <?= $this->render('_footer') ?>
 </div>
 
 <?php $this->endBody() ?>
