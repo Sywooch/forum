@@ -7,17 +7,17 @@ $this->title=$title.'-论坛管理后台';
         <input class="layui-input" name="name" id="name" value="" autocomplete="off" placeholder="版区名">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
+    <button class="layui-btn" data-type="add">新增</button>
 </div>
 
 <table class="layui-hide" id="plateTable" lay-filter="plateTable"></table>
 
 <script type="text/html" id="plateBar">
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="hot">热帖</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="essence">精贴</a>
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="hot">编辑</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="essence">关闭</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="essence">推荐</a>
 </script>
-<script src="/static/layui.js"></script>
+
 <script>
     var s="<?= \Yii::$app->request->csrfToken ?>";
     layui.use(['element','table'], function(){
@@ -42,6 +42,8 @@ $this->title=$title.'-论坛管理后台';
                 ,{fixed:'right',title:'操作',align:'center',toolbar:'#plateBar',width:210}
             ]]
             ,page: true
+            ,limit:100
+            ,limits:[30,60,90]
             ,id: 'plateReload'
             ,height:'full-200'
             ,where:{_csrf:s}
@@ -90,6 +92,16 @@ $this->title=$title.'-论坛管理后台';
         });
 
         var $ = layui.$, active = {
+            add: function(){
+                layer.open({
+                    type:2,
+                    area:['700px','450px'],
+                    title:'新增',
+                    fixed: false,
+                    maxmin:true,
+                    content:"<?= Url::toRoute(['plate/create'])?>",
+                });
+            },
             reload: function(){
                 var name = $('#name');
                 table.reload('plateReload', {

@@ -19,7 +19,6 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
 <script src="/static/layui.js"></script>
-
 <div class="layui-layout layui-layout-admin">
     <?= $this->render('_header') ?>
 

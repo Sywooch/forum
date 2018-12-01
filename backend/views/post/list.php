@@ -18,7 +18,7 @@ $this->title=$title.'-论坛管理后台';
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
-<script src="/static/layui.js"></script>
+
 <script>
     var s="<?= \Yii::$app->request->csrfToken ?>";
     layui.use(['element','table'], function(){

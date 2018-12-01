@@ -5,6 +5,7 @@ use Yii;
 use yii\web\Controller;
 use yii\data\Pagination;
 use frontend\models\Plate;
+use backend\models\PlateForm;
 
 class PlateController extends Controller{
 
@@ -28,6 +29,20 @@ class PlateController extends Controller{
             return ['code'=>0,'count'=>$count,'data'=>$list?$list:[]];
         }
         return $this->render('list',['title'=>'版区管理']);
+    }
+
+    public function actionCreate(){
+        if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
+            Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+            $model=new PlateForm();
+            if($model->load(Yii::$app->request->post())&&$model->create()){return ['code'=>0,'info'=>'新增成功','data'=>''];}
+            $errors=$model->getErrors();
+            if(empty($errors)){return ['code'=>0,'msg'=>'网络错误请重试!','data'=>''];}
+            foreach($model->getErrors() as $v){$msg=$v[0];}
+            return ['code'=>0,'info'=>$msg,'data'=>''];
+        }
+        $plates=Plate::find()->select(['id','name'])->where(['fid'=>0])->asArray()->all();
+        return $this->renderPartial('create',['title'=>'版区新增','plates'=>$plates]);
     }
 
     private function conversion($list){

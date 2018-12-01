@@ -20,7 +20,7 @@ $this->title=$title.'-论坛管理后台';
 
 <script>
     var s="<?= \Yii::$app->request->csrfToken ?>";
-    layui.use('table', function(){
+    layui.use(['element','table'], function(){
         var table = layui.table;
 
         table.render({

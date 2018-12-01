@@ -9,7 +9,7 @@ use yii\imagine\Image;
 class ImageForm extends Model{
 
     public $imageFile;
-    public $types=['avatar','images'];
+    public $types=['avatar','images','plate'];
     private $LocalLocation;
 
     public function rules(){
@@ -46,6 +46,7 @@ class ImageForm extends Model{
         $lists=[
             'avatar'=>'./images/avatar/'.date("Ym"),
             'images'=>'./images/bbs/'.date("Ym"),
+            'plate'=>'./images/plate/'.date("Ym"),
         ];
         return $lists[$type];
     }
