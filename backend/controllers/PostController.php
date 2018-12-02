@@ -7,6 +7,7 @@ use yii\data\Pagination;
 use frontend\models\Post;
 use common\models\User;
 use backend\models\PostForm;
+use yii\db\Query;
 
 class PostController extends Controller{
 
@@ -23,14 +24,15 @@ class PostController extends Controller{
 
             $query=Post::find();
 
-            $count=$query->filterWhere($where)->count();
+            $count=$where?$query->filterWhere($where)->count():Yii::$app->redis->get('post_counts');
 
             $pagination=new Pagination([
                 'defaultPageSize' =>isset($post['limit'])?$post['limit']:10,
                 'totalCount' =>$count,
                 'params'=>['page'=>isset($post['page'])?$post['page']:1],
             ]);
-            $list=$query->select('id,user_id,plate_id,title,view,comments,collection,star,essence,is_hot,tos,create_at')->with(['user','plate'])->filterWhere($where)->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
+            $subQuery = (new Query())->select('id')->filterWhere($where)->from('bbs_posts')->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit);
+            $list=$query->alias('a')->select('a.id,a.user_id,a.plate_id,a.title,a.view,a.comments,a.collection,a.star,a.essence,a.is_hot,a.tos,a.create_at')->innerJoin(['b'=>$subQuery],'a.id=b.id')->with(['user','plate'])->asArray()->all();
             $list=$this->conversion($list);
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
             return ['code'=>0,'count'=>$count,'data'=>$list?$list:[]];

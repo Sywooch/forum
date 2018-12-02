@@ -48,6 +48,8 @@ $this->title=$title.'-论坛管理后台';
             ,height:'full-200'
             ,where:{_csrf:s}
             ,method:'post'
+            ,limit:20
+            ,limits:[20,40,60,80,100]
         });
 
         table.on('tool(postTable)', function(obj){

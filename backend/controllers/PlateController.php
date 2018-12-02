@@ -45,6 +45,31 @@ class PlateController extends Controller{
         return $this->renderPartial('create',['title'=>'版区新增','plates'=>$plates]);
     }
 
+    public function actionUpdate(){
+        if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
+            Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+            $model=new PlateForm();
+            if($model->load(Yii::$app->request->post())&&$model->update(Yii::$app->request->post('id'))){return ['code'=>0,'info'=>'修改成功','data'=>''];}
+            $errors=$model->getErrors();
+            if(empty($errors)){return ['code'=>0,'msg'=>'网络错误请重试!','data'=>''];}
+            foreach($model->getErrors() as $v){$msg=$v[0];}
+            return ['code'=>0,'info'=>$msg,'data'=>''];
+        }
+        $plates=Plate::find()->select(['id','name'])->where(['fid'=>0])->asArray()->all();
+        $id=Yii::$app->request->get('id');
+        $info=Plate::find()->select(['id','fid','name','img','is_recommend','intro'])->where(['id'=>$id])->asArray()->one();
+        return $this->renderPartial('update',['title'=>'版区编辑','plates'=>$plates,'info'=>$info]);
+    }
+
+    public function actionClose(){
+        Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+        $id=Yii::$app->request->post('id','');
+        if(empty($id)){return ['code'=>1,'info'=>'请选择关闭版区','data'=>''];}
+        $info=Plate::findOne($id);
+        $res=Plate::updateAll(['status' =>1], ['like', 'email', '@example.com']);
+        return ['code'=>$res?0:1,'info'=>$res?'操作成功':'操作失败','data'=>''];
+    }
+
     private function conversion($list){
         $lists=[];
         if(!empty($list)){

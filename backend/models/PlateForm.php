@@ -89,5 +89,16 @@ class PlateForm extends Model{
         return $plateModel->save();
     }
 
+    public function update($id){
+        $plateModel=Plate::findOne(['id'=>$id]);
+        if(!empty($this->fid)){$plateModel->fid=$this->fid;}
+        if(!empty($this->img)){$plateModel->img=$this->img;}
+        $plateModel->name=$this->name;
+        $plateModel->is_recommend=$this->recommend;
+        $plateModel->intro=$this->intro;
+        $plateModel->create_at=time();
+        return $plateModel->save();
+    }
+
 
 }

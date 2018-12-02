@@ -8,11 +8,6 @@ use backend\models\LoginForm;
 class LoginController extends Controller{
 
     public function actionLogin(){
-
-
-
-
-        exit;
         $model=new LoginForm();
         if($model->load(Yii::$app->request->post())&&$model->login()){
             Yii::$app->session->setFlash('success','欢迎回来!');

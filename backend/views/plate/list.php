@@ -13,9 +13,8 @@ $this->title=$title.'-论坛管理后台';
 <table class="layui-hide" id="plateTable" lay-filter="plateTable"></table>
 
 <script type="text/html" id="plateBar">
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="hot">编辑</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="essence">关闭</a>
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="essence">推荐</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="close">关闭</a>
 </script>
 
 <script>
@@ -39,7 +38,7 @@ $this->title=$title.'-论坛管理后台';
                 ,{field:'totals', title: '版区总贴数',width:300}
                 ,{field:'is_recommend', title: '是否推荐',sort: true}
                 ,{field:'create_at', title: '发布时间',sort:true,width:170}
-                ,{fixed:'right',title:'操作',align:'center',toolbar:'#plateBar',width:210}
+                ,{fixed:'right',title:'操作',align:'center',toolbar:'#plateBar',width:180}
             ]]
             ,page: true
             ,limit:100
@@ -53,40 +52,22 @@ $this->title=$title.'-论坛管理后台';
         table.on('tool(plateTable)', function(obj){
             var data = obj.data;
             var id=data.id;
-            if(obj.event === 'del'){
-                layer.confirm('真的删除行么', function(index){
-                    $.post("<?= Url::toRoute(['post/delete']) ?>",{id:id,_csrf:s},function(res){
+            if(obj.event === 'close'){
+                layer.confirm('真的关闭吗?', function(index){
+                    $.post("<?= Url::toRoute(['plate/close']) ?>",{id:data.id,_csrf:s},function(res){
                         res.code==1?layer.msg(res.info,{icon:5}):layer.msg(res.info,{icon:1,time:1000},function(){
-                            obj.del();
+                            window.location.reload();
                         });
                     });
-                    layer.close(index);
                 });
             } else if(obj.event === 'edit'){
-                var index=layer.open({
+                layer.open({
                     type: 2,
-                    area: ['700px','750px'],
+                    area: ['700px','450px'],
                     title:'编辑',
                     fixed: false,
                     maxmin:true,
-                    content:"/post/update?id="+id,
-                });
-                layer.full(index);
-            }else if(obj.event === 'hot'){
-                layer.confirm('确定要设置为热帖?', function(){
-                    $.post("<?= Url::toRoute(['post/hot']) ?>",{id:data.id,_csrf:s},function(res){
-                        res.code==1?layer.msg(res.info,{icon:5}):layer.msg(res.info,{icon:1,time:1000},function(){
-                            window.location.reload();
-                        });
-                    });
-                });
-            }else if(obj.event === 'essence'){
-                layer.confirm('确定要设置为精帖?', function(){
-                    $.post("<?= Url::toRoute(['post/essence']) ?>",{id:data.id,_csrf:s},function(res){
-                        res.code==1?layer.msg(res.info,{icon:5}):layer.msg(res.info,{icon:1,time:1000},function(){
-                            window.location.reload();
-                        });
-                    });
+                    content:"/plate/update?id="+id,
                 });
             }
         });
