@@ -4,7 +4,7 @@ $this->title=$title.'-论坛管理后台';
 ?>
 <div class="adminTable">
     <div class="layui-inline">
-        <input class="layui-input" name="names" id="names" autocomplete="off" placeholder="角色名称">
+        <input class="layui-input" name="names" id="names" autocomplete="off" placeholder="菜单名称">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
     <button class="layui-btn" data-type="add">添加</button>
@@ -14,7 +14,6 @@ $this->title=$title.'-论坛管理后台';
 <script type="text/html" id="barAdmin">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-    <a class="layui-btn layui-btn-xs" lay-event="permission">授权</a>
 </script>
 
 <script>
@@ -30,7 +29,7 @@ $this->title=$title.'-论坛管理后台';
                     $.ajax({
                         type:'POST',
                         async: false,
-                        url: "<?= Url::toRoute('role/delete') ?>",
+                        url: "<?= Url::toRoute('menu/delete') ?>",
                         data: {id:data.id,_csrf:s},
                         success: function (result) {
                             layer.msg(result.info,{time:1000});
@@ -45,33 +44,27 @@ $this->title=$title.'-论坛管理后台';
                 var id=data.id;
                 layer.open({
                     type: 2,
-                    area: ['700px','250px'],
+                    area: ['700px','300px'],
                     title:'编辑',
                     fixed: false,
                     maxmin:true,
-                    content:"/role/update?id="+id,
+                    content:"/menu/update?id="+id,
                 });
-            }else if(obj.event === 'permission'){
-                var id=data.id;
-                var index=layer.open({
-                    type: 2,
-                    area: ['700px','500px'],
-                    title:'授权',
-                    fixed: false,
-                    maxmin:true,
-                    content:"/permission/take?id="+id,
-                });
-                layer.full(index);
             }
-
         });
 
         table.render({
             elem: '#LAY_table_admin'
-            ,url: "<?= Url::toRoute(['role/list']) ?>"
+            ,url: "<?= Url::toRoute(['menu/list']) ?>"
             ,cols: [[
-                {field:'name',title:'权限名'}
-                ,{field:'description', title: '角色描述'}
+                {field:'menu_name', align:'center',title: '菜单名',templet: function(d){
+                        if(d.pid==0){
+                            return '<span style="color:#5FB878;">'+d.menu_name+'</span>';
+                        }else{
+                            return d.menu_name;
+                        }
+                    }}
+                ,{field:'menu_url', title: '菜单链接'}
                 ,{field:'created_at', title:'创建时间'}
                 ,{field:'updated_at', title:'编辑时间'}
                 ,{fixed:'right','title':'操作',width:200, align:'center',toolbar: '#barAdmin'}
@@ -79,9 +72,8 @@ $this->title=$title.'-论坛管理后台';
             ,id: 'table_admin'
             ,cellMinWidth: 80
             ,height:'full-200'
+            ,limit:200
             ,page:true
-            ,limit:20
-            ,limits:[20,40,60,80,100]
             ,method:'post'
             ,where:{_csrf:s}
         });
@@ -90,11 +82,11 @@ $this->title=$title.'-论坛管理后台';
             add:function(){
                 layer.open({
                     type: 2,
-                    area: ['750px','250px'],
+                    area: ['750px','300px'],
                     title:'添加',
                     fixed: false,
                     maxmin:true,
-                    content:"<?= Url::toRoute(['role/create']) ?>",
+                    content:"<?= Url::toRoute(['menu/create']) ?>",
                 });
             },
             reload: function(){

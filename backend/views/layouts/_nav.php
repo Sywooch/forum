@@ -30,7 +30,8 @@ use yii\helpers\Url;
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">权限管理</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="<?= Url::toRoute(['post/list']) ?>">权限列表</a></dd>
+                    <dd><a href="<?= Url::toRoute(['menu/list']) ?>">菜单列表</a></dd>
+                    <dd><a href="<?= Url::toRoute(['permission/list']) ?>">权限列表</a></dd>
                     <dd><a href="<?= Url::toRoute(['role/list']) ?>">角色列表</a></dd>
                     <dd><a href="<?= Url::toRoute(['post/list']) ?>">管理员列表</a></dd>
                 </dl>

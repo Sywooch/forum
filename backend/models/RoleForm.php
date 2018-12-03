@@ -4,52 +4,54 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 
-
 class RoleForm extends Model{
 
-    public $description;
+    public $names;
     public $name;
+    public $description;
 
     public function rules(){
         return [
-            // name, email, subject and body are required
-            ['description','required','message'=>'请填写角色名'],
-            ['description','valiteD'],
+            ['names','string'],
             ['name','required','message'=>'请填写角色名'],
-            ['name','exist','targetAttribute'=>'name','message'=>'角色已存在'],
+            ['name','match','pattern'=>'/[a-zA-z]+/'],
+            ['name', 'unique', 'targetClass' => Role::class, 'targetAttribute' =>'name'],
+            ['description','required','message'=>'请填写角色描述'],
         ];
     }
 
-    public function valiteD($attribute){
-        if(strpos($this->description,'<script>')!==false){
-            $this->addError($attribute,'角色名不得含有特殊字符');
-            return false;
-        }
-        if(strpos($this->description,'</script>')!==false){
-            $this->addError($attribute,'角色名不得含有特殊字符');
-            return false;
-        }
-        if(strpos($this->description,'-')!==false){
-            return $this->addError($attribute,'角色名不得含有特殊字符');
-        }
-        if(strpos($this->description,"'")!==false){
-            return $this->addError($attribute,'角色名不得含有特殊字符');
-        }
+    public function attributeLabels(){
+        return [
+            'name'=>'角色名',
+            'description'=>'角色描述',
+        ];
     }
 
-    /**
-     * 新增角色
-     */
+    public function create(){
+        if(!$this->validate()){return false;}
+        $count=Role::find()->filterWhere(['type'=>1])->count();
+        $roleModel=new Role();
+        $roleModel->name=$this->name;
+        $roleModel->type=1;
+        $roleModel->description=$this->description;
+        $roleModel->id=$count+1;
+        $roleModel->created_at=time();
+        $roleModel->updated_at=time();
+        return $roleModel->save();
+    }
 
-    public function addRole(){
-        if(!$this->validate()){
-            return false;
-        }
-        $auth=Yii::$app->authManager;
-        $roles=$auth->createRole($this->name);
-        $roles->description=$this->description;
-        $res=$auth->add($roles);
-        return $res;
+    public function update(){
+        if(!$this->validate()){return false;}
+        $roleModel=Role::findOne(['name'=>$this->names]);
+        $roleModel->name=$this->name;
+        $roleModel->description=$this->description;
+        $roleModel->updated_at=time();
+        return $roleModel->save();
+    }
+
+    public function delete($id){
+        $roleModel=Role::findOne(['id'=>$id]);
+        return $roleModel->delete();
     }
 
 }

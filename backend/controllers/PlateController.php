@@ -51,7 +51,7 @@ class PlateController extends Controller{
             $model=new PlateForm();
             if($model->load(Yii::$app->request->post())&&$model->update(Yii::$app->request->post('id'))){return ['code'=>0,'info'=>'修改成功','data'=>''];}
             $errors=$model->getErrors();
-            if(empty($errors)){return ['code'=>0,'msg'=>'网络错误请重试!','data'=>''];}
+            if(empty($errors)){return ['code'=>0,'info'=>'网络错误请重试!','data'=>''];}
             foreach($model->getErrors() as $v){$msg=$v[0];}
             return ['code'=>0,'info'=>$msg,'data'=>''];
         }

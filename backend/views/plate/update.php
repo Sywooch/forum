@@ -39,7 +39,7 @@ $this->title=$title.'-论坛管理后台';
             <div class="layui-upload">
                 <button type="button" class="layui-btn" id="test1">上传图片</button>
                 <div class="layui-upload-list layui-inline">
-                    <img class="layui-upload-img" id="demo1" src="<?= $info['img'] ?>"/>
+                    <img class="layui-upload-img" id="demo1" src="<?= $info['img'] ?>" style="width:90px;height:90px;"/>
                     <p id="demoText"></p>
                     <input type="hidden" name="PlateForm[img]" value="<?= $info['img'] ?>" readonly/>
                 </div>
