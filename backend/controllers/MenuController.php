@@ -74,13 +74,24 @@ class MenuController extends Controller{
     }
 
     private function conversion($list){
+        $lists=[];
         if(!empty($list)){
             foreach($list as $k=>$v){
-                $list[$k]['created_at']=$v['created_at']?date('Y-m-d H:i'):'';
-                $list[$k]['updated_at']=$v['updated_at']?date('Y-m-d H:i'):'';
+                if($v['pid']==0){
+                    $v['created_at']=$v['created_at']?date("Y-m-d H:i"):'';
+                    $v['updated_at']=$v['updated_at']?date("Y-m-d H:i"):'';
+                    $lists[]=$v;
+                    foreach($list as $ks=>$vs){
+                        if($vs['pid']==$v['id']){
+                            $vs['created_at']=$vs['created_at']?date("Y-m-d H:i"):'';
+                            $vs['updated_at']=$vs['updated_at']?date("Y-m-d H:i"):'';
+                            $lists[]=$vs;
+                        }
+                    }
+                }
             }
         }
-        return $list;
+        return $lists;
     }
 
 }

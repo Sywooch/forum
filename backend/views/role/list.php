@@ -63,7 +63,6 @@ $this->title=$title.'-论坛管理后台';
                 });
                 layer.full(index);
             }
-
         });
 
         table.render({

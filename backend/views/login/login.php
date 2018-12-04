@@ -2,7 +2,6 @@
 use backend\assets\AppAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
-
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -14,41 +13,87 @@ AppAsset::register($this);
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <?= Html::csrfMetaTags() ?>
         <title>管理后台登陆</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/normalize.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/demo.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/component.css" />
+        <?php $this->head() ?>
     </head>
-    <body>
+    <body style="background-color:#f2f2f2">
     <?php $this->beginBody() ?>
-    <div class="container demo-1">
-        <div class="content">
-            <div id="large-header" class="large-header">
-                <canvas id="demo-canvas"></canvas>
-                <div class="logo_box">
-                    <h3>欢迎你</h3>
-                    <form action="<?= Url::toRoute(['login/login']) ?>" method="post">
-                        <input type="hidden" value="<?= \Yii::$app->request->csrfToken ?>" name="_csrf" readonly>
-                        <div class="input_outer">
-                            <span class="u_user"></span>
-                            <input name="LoginForm[email]" class="text" style="color: #FFFFFF !important" type="text" value="<?= $model->email?>" placeholder="请输入邮箱" />
-                            <span><?= Html::error($model,'email',['class'=>'error']) ?></span>
+    <div class="layui-main">
+        <div class="layui-row">
+            <div class="layui-col-md6" style="height:200px;">
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md12" >
+                <div style="width:50%;margin-left:20%;">
+                    <div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login">
+                        <div class="layadmin-user-login-main">
+                            <div style="text-align:center;margin-bottom:20px;">
+                                <h2>后台管理</h2>
+                            </div>
+                            <form class="layui-form" action="">
+                                <input type="hidden" name="_csrf" value="<?= Yii::$app->request->csrfToken ?>"/>
+                                <div class="layui-form-item">
+                                    <input type="text" name="LoginForm[username]" lay-verify="required|username" placeholder="用户名" class="layui-input">
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="password" name="LoginForm[password]" lay-verify="required|password" placeholder="密码" class="layui-input">
+                                </div>
+                                <div class="layui-form-item" style="margin-bottom:20px;">
+                                    <input type="checkbox" name="LoginForm[remember]" lay-skin="primary" title="记住密码"><div class="layui-unselect layui-form-checkbox" lay-skin="primary"><span>记住密码</span><i class="layui-icon layui-icon-ok"></i></div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="imagecretae">立即提交</button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="input_outer">
-                            <span class="us_uer"></span>
-                            <input name="LoginForm[password]" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" placeholder="请输入密码">
-                        </div>
-                        <span><?= Html::error($model,'password',['class'=>'error']) ?></span>
-                        <div class="mb2"><button class="act-but submit" type="submit" style="color: #FFFFFF;width:100%">登录</button></div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="/static/js/TweenLite.min.js"></script>
-    <script src="/static/js/EasePack.min.js"></script>
-    <script src="/static/js/rAF.js"></script>
-    <script src="/static/js/demo-1.js"></script>
-    <div style="text-align:center;">
+    <script src="/static/layui.js"></script>
+    <script>
+        layui.use(['element','form'], function(){
+            var form = layui.form
+                ,$ = layui.jquery
+                ,upload = layui.upload
+                ,layer = layui.layer;
+            form.verify({
+                username:function(value){
+                    var pattern =/^[0-9a-zA-Z]+$/;
+                    if(!pattern.test(value)){
+                        return '用户名仅支持英文和数字';
+                    }
+                    if(value.length>20){
+                        return '用户名不得大于20个字符';
+                    }
+                },
+                password:function(value){
+                    var patterns=/^[0-9a-zA-Z]+$/;
+                    if(!patterns.test(value)){
+                        return '用户名仅支持英文和数字';
+                    }
+                    if(value.length>20){
+                        return '密码不得大于20个字符';
+                    }
+                }
+            });
+            form.on('submit(imagecretae)', function(data){
+                $.ajax({
+                    type:'POST',
+                    async: false,
+                    url: "<?= Url::toRoute(['login/index'])?>",
+                    data:data.field,
+                    success: function (res) {
+                        res.code==1?layer.msg(res.info,{icon:5}):layer.msg(res.info,{icon:1,time:1000},function(){
+                            window.location.href="<?= Url::home() ?>";
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
     <?php $this->endBody() ?>
     </body>
     </html>

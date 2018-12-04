@@ -37,7 +37,7 @@ class PermissionController extends Controller{
         if(Yii::$app->request->isPost){
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
             $model=new PermissionForm(['scenario'=>'create']);
-            if($model->load(Yii::$app->request->post())&&$model->create()){return ['code'=>0,'info'=>'添加成功','data'=>''];}
+            if($model->load(Yii::$app->request->post())&&$model->create()){}
             $errors=$model->getErrors();
             if(empty($errors)){return ['code'=>1,'info'=>'网络错误请重试!','data'=>''];}
             foreach($model->getErrors() as $v){$msg=$v[0];}

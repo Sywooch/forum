@@ -9,18 +9,19 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'defaultRoute'=>'home/index',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'backend\models\User',
             'enableAutoLogin' =>true,
-            'identityCookie' => ['name' => '_identity-b', 'httpOnly' => true],
+            'loginUrl' => ['login/index'],
+            'identityCookie' => ['name' => '_identity-back', 'httpOnly' => true],
         ],
         'session' => [
-            'name' => 'advanced-b',
+            'name' => 'advanced-back',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
