@@ -4,8 +4,31 @@ namespace backend\controllers;
 use Yii;
 use yii\web\Controller;
 use backend\models\LoginForm;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 
 class LoginController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'logout'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['logout'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionIndex(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
@@ -20,8 +43,10 @@ class LoginController extends Controller{
         return $this->renderPartial('login');
     }
 
-    public function actionOut(){
 
+    public function actionLogout(){
+        Yii::$app->user->logout();
+        return $this->redirect(Url::toRoute(['/login']));
     }
 
 }

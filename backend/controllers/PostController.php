@@ -7,9 +7,45 @@ use yii\data\Pagination;
 use frontend\models\Post;
 use common\models\User;
 use backend\models\PostForm;
+use yii\filters\AccessControl;
 use yii\db\Query;
 
 class PostController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['post/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['post/update'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['essence'],
+                        'roles' => ['post/essence'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['hot'],
+                        'roles' => ['post/hot'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['post/delete'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){

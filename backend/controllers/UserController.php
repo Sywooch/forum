@@ -5,25 +5,44 @@ use Yii;
 use yii\web\Controller;
 use common\models\User;
 use yii\data\Pagination;
-use backend\models\UupdateForm;
+use yii\filters\AccessControl;
 
 class UserController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['user/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['disable'],
+                        'roles' => ['user/disable'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax){
             $get=Yii::$app->request->get();
-            $where=[];
+            $where=['or'];
             if(isset($get['name'])&&!empty($get['name'])){
-                $where=['or',['email'=>$get['name']],['username'=>$get['name']]];
+                $where[]=['LIKE','email',$get['name']];
+                $where[]=['LIKE','username',$get['name']];
             }
             $query=User::find();
             $count=$query->filterWhere($where)->count();
-
             $pagination=new Pagination([
                 'defaultPageSize' =>isset($get['limit'])?$get['limit']:20,
                 'totalCount' =>$count,
             ]);
-
             $list=$query->select('id,email,username,city,sex,level,experience,integral,groups,status,ip,created_at')->filterWhere($where)->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
             $list=$this->conversion($list);
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
@@ -31,7 +50,6 @@ class UserController extends Controller{
         }
         return $this->render('list',['title'=>'用户管理']);
     }
-
 
     /*
      * 批量禁用
@@ -46,36 +64,7 @@ class UserController extends Controller{
         return ['code'=>$res?0:1,'info'=>$res?'操作成功':'操作失败','data'=>[]];
     }
 
-    /*
-     * 删除
-     */
-    public function actionDel(){
-        Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-        $post=Yii::$app->request->post();
-        if(!isset($post['id'])||empty($post['id'])){
-            return ['code'=>0,'info'=>'请选择修改数据','data'=>[]];
-        }
-        $user=User::findOne($post['id']);
-        $res=$user->delete();
-        return ['code'=>$res?1:0,'info'=>$res?'操作成功':'操作失败','data'=>[]];
-    }
-
-    /*
-     *编辑
-     */
-    public function actionEdit(){
-        $model=new UupdateForm();
-
-        if($model->load(Yii::$app->request->post())&&$model->updates()){
-            Yii::$app->session->setFlash('success','修改成功');
-            return $this->redirect('index.php?r=user/edit&id='.$model->id);
-        }
-        $gets=Yii::$app->request->get();
-        $user=User::findOne($gets['id']);
-        return $this->renderPartial('edit',['model'=>$model,'user'=>$user]);
-    }
-
-    public function conversion($list){
+    private function conversion($list){
         if(!empty($list)){
             foreach($list as $k=>$v){
                 $list[$k]['created_at']=$v['created_at']?date("Y-m-d H:i:s",$v['created_at']):'';

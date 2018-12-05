@@ -9,6 +9,10 @@ class Permission extends ActiveRecord{
         return '{{%auth_item}}';
     }
 
+    public function getAssignment(){
+        return $this->hasMany(Assignment::className(),['item_name'=>'name'])->select('item_name');
+    }
+
     public function getTree($role){
         $params=static::find()->select('id,fid,name,description')->filterWhere(['type'=>2])->limit(1000)->offset(0)->asArray()->all();
         $data=array('trees'=>array());

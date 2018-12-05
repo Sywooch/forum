@@ -2,7 +2,6 @@
 use yii\helpers\Url;
 $this->title=$title.'-论坛管理后台';
 ?>
-
 <div class="userTable">
     <div class="layui-inline">
         <input class="layui-input" name="name" id="name" autocomplete="off" value="" placeholder="邮箱/昵称" />
@@ -14,7 +13,9 @@ $this->title=$title.'-论坛管理后台';
 
 <script type="text/html" id="toolbarUser">
     <div class="layui-btn-container">
+        <?php if(Yii::$app->user->can('user/disable')){ ?>
         <button class="layui-btn layui-btn-sm" lay-event="getCheckData">批量禁止</button>
+        <?php } ?>
     </div>
 </script>
 
@@ -43,8 +44,9 @@ $this->title=$title.'-论坛管理后台';
             ,id:'userReload'
             ,page: true
             ,height:'full-200'
+            ,limit:20
             ,toolbar: '#toolbarUser'
-            ,defaultToolbar: ['exports']
+            ,defaultToolbar: ['']
         });
         table.on('toolbar(LAY_table_user)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);

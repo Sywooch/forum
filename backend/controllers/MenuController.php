@@ -6,8 +6,39 @@ use yii\web\Controller;
 use backend\models\Menu;
 use yii\data\Pagination;
 use backend\models\MenuForm;
+use yii\filters\AccessControl;
 
 class MenuController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['menu/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['menu/create'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['menu/update'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['menu/delete'],
+                    ]
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){

@@ -75,8 +75,8 @@ $this->title=$title.'-论坛管理后台';
             ,data:{_csrf:s,type:'plate'}
             ,field:"ImageForm[imageFile]"
             ,accept:'images'
-            ,acceptMime: 'image/jpg,image/png'
-            ,exts:'jpg|png|jpeg'
+            ,acceptMime:'image/jpeg,image/gif'
+            ,exts:'jpg|png|gif|jpeg'
             ,size:300
             ,before: function(obj){
                 obj.preview(function(index, file, result){

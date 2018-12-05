@@ -6,8 +6,39 @@ use yii\web\Controller;
 use yii\data\Pagination;
 use backend\models\Permission;
 use backend\models\RoleForm;
+use yii\filters\AccessControl;
 
 class RoleController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['role/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['role/create'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['role/update'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['role/delete'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
@@ -34,7 +65,7 @@ class RoleController extends Controller{
     public function actionCreate(){
         if(Yii::$app->request->isPost){
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-            $model=new RoleForm();
+            $model=new RoleForm(['scenario'=>'create']);
             if($model->load(Yii::$app->request->post())&&$model->create()){return ['code'=>0,'info'=>'添加成功','data'=>''];}
             $errors=$model->getErrors();
             if(empty($errors)){return ['code'=>1,'info'=>'网络错误请重试!','data'=>''];}
@@ -47,7 +78,7 @@ class RoleController extends Controller{
     public function actionUpdate(){
         if(Yii::$app->request->isPost){
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-            $model=new RoleForm();
+            $model=new RoleForm(['scenario'=>'update']);
             if($model->load(Yii::$app->request->post())&&$model->update()){return ['code'=>0,'info'=>'编辑成功','data'=>''];}
             $errors=$model->getErrors();
             if(empty($errors)){return ['code'=>1,'info'=>'网络错误请重试!','data'=>''];}
@@ -55,7 +86,7 @@ class RoleController extends Controller{
             return ['code'=>1,'info'=>$msg,'data'=>''];
         }
         $id=Yii::$app->request->get('id','');
-        $info=Permission::find()->select('name,description')->filterWhere(['id'=>$id])->asArray()->one();
+        $info=Permission::find()->select('name,description')->filterWhere(['id'=>$id,'type'=>1])->asArray()->one();
         return $this->renderPartial('update',['title'=>'编辑角色','info'=>$info]);
     }
 

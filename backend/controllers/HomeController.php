@@ -3,8 +3,32 @@ namespace backend\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 
 class HomeController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function actions(){
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ],
+        ];
+    }
 
     public function actionIndex(){
         return $this->render('index');

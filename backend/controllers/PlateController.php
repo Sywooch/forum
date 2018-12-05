@@ -6,15 +6,46 @@ use yii\web\Controller;
 use yii\data\Pagination;
 use frontend\models\Plate;
 use backend\models\PlateForm;
+use yii\filters\AccessControl;
 
 class PlateController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['plate/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['plate/create'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['plate/update'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['close'],
+                        'roles' => ['plate/close'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
             $post=Yii::$app->request->post();
             $where=[];
             if(isset($post['name'])&&!empty($post['name'])){
-                $where=['LIKE','name','%'.$post['name'].'%'];
+                $where=['like', 'name', 'php'];
             }
             $query=Plate::find();
             $count=$query->filterWhere($where)->count();
@@ -24,7 +55,7 @@ class PlateController extends Controller{
                 'params'=>['page'=>isset($post['page'])?$post['page']:1],
             ]);
             $list=$query->select('id,fid,img,name,intro,totals,is_recommend,create_at')->filterWhere($where)->orderBy(['id'=>SORT_DESC])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
-            $list=$this->conversion($list);
+            $list=$this->conversion($list,$where);
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
             return ['code'=>0,'count'=>$count,'data'=>$list?$list:[]];
         }
@@ -70,8 +101,17 @@ class PlateController extends Controller{
         return ['code'=>$res?0:1,'info'=>$res?'操作成功':'操作失败','data'=>''];
     }
 
-    private function conversion($list){
+    private function conversion($list,$where=[]){
         $lists=[];
+        if(!empty($where)){
+            if(!empty($list)){
+                foreach($list as $k=>$v){
+                    $list[$k]['is_recommend']=$v['is_recommend']?'推荐':'不推荐';
+                    $list[$k]['create_at']=$v['create_at']?date("Y-m-d H:i"):'';
+                }
+            }
+            return $list;
+        }
         if(!empty($list)){
             foreach($list as $k=>$v){
                 if($v['fid']==0){
@@ -80,8 +120,8 @@ class PlateController extends Controller{
                     $lists[]=$v;
                     foreach($list as $ks=>$vs){
                         if($vs['fid']==$v['id']){
-                            $vs['is_recommend']=$v['is_recommend']?'推荐':'不推荐';
-                            $vs['create_at']=$v['create_at']?date("Y-m-d H:i"):'';
+                            $vs['is_recommend']=$vs['is_recommend']?'推荐':'不推荐';
+                            $vs['create_at']=$vs['create_at']?date("Y-m-d H:i"):'';
                             $lists[]=$vs;
                         }
                     }

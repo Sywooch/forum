@@ -9,7 +9,7 @@ use yii\web\UploadedFile;
 class ImageController extends Controller{
 
     public function actionUpload(){
-        //if(!Yii::$app->user->identity){return json_encode(['code'=>1,'state'=>'请登陆后操作','url'=>null,'msg'=>'请登陆后操作!','data'=>'']);}
+        if(!Yii::$app->user->identity){return json_encode(['code'=>1,'state'=>'请登陆后操作','url'=>null,'msg'=>'请登陆后操作!','data'=>'']);}
         if(Yii::$app->request->isPost){
             $model = new ImageForm();
             $model->imageFile=UploadedFile::getInstance($model,'imageFile');

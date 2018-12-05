@@ -7,13 +7,19 @@ $this->title=$title.'-论坛管理后台';
         <input class="layui-input" name="names" id="names" autocomplete="off" placeholder="权限名称">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
+    <?php if(Yii::$app->user->can('permission/create')){ ?>
     <button class="layui-btn" data-type="add">添加</button>
+    <?php } ?>
 </div>
 <table class="layui-hide" id="LAY_table_admin" lay-filter="admin"></table>
 
 <script type="text/html" id="barAdmin">
+    <?php if(Yii::$app->user->can('permission/update')){ ?>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <?php } ?>
+    <?php if(Yii::$app->user->can('permission/delete')){ ?>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <?php } ?>
 </script>
 
 <script>

@@ -8,8 +8,49 @@ use yii\data\Pagination;
 use backend\models\Permission;
 use backend\models\PermissionForm;
 use backend\models\TakeForm;
+use yii\filters\AccessControl;
 
 class PermissionController extends Controller{
+
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['tree'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['list'],
+                        'roles' => ['permission/list'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['permission/create'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['permission/update'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['permission/delete'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['take'],
+                        'roles' => ['permission/take'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public function actionList(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
@@ -37,7 +78,7 @@ class PermissionController extends Controller{
         if(Yii::$app->request->isPost){
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
             $model=new PermissionForm(['scenario'=>'create']);
-            if($model->load(Yii::$app->request->post())&&$model->create()){}
+            if($model->load(Yii::$app->request->post())&&$model->create()){return ['code'=>0,'info'=>'添加成功!','data'=>''];}
             $errors=$model->getErrors();
             if(empty($errors)){return ['code'=>1,'info'=>'网络错误请重试!','data'=>''];}
             foreach($model->getErrors() as $v){$msg=$v[0];}
@@ -85,14 +126,16 @@ class PermissionController extends Controller{
             foreach($model->getErrors() as $v){$msg=$v[0];}
             return ['code'=>1,'info'=>$msg,'data'=>''];
         }
-        return $this->renderPartial('take',['title'=>'授权']);
+        $id=Yii::$app->request->get('id','');
+        return $this->renderPartial('take',['title'=>'授权','id'=>$id]);
     }
 
     public function actionTree(){
         if(Yii::$app->request->isAjax||Yii::$app->request->isPost){
             Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+            $role=Yii::$app->request->post('role','');
             $permissionModel=new Permission();
-            $data=$permissionModel->getTree('admin');
+            $data=$permissionModel->getTree($role);
             return ['code','info'=>'列表如下','data'=>$data];
         }
     }

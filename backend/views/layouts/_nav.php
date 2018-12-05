@@ -6,7 +6,7 @@ $UserMenu=Yii::$app->session->get('user_menu');
 <div class="layui-side layui-bg-black">
     <div class="layui-side-scroll">
         <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-            <li class="layui-nav-item"><a href="<?= Url::toRoute(['home/index']) ?>">主页</a></li>
+            <li class="layui-nav-item <?php if($route=='home/index'){ ?> layui-this <?php }?>" ><a href="<?= Url::toRoute(['/home']) ?>">主页</a></li>
             <?php foreach($UserMenu as $v){ ?>
             <li class="layui-nav-item <?php if(in_array($route,$v['child_url'])){ ?> layui-nav-itemed <?php }?> ">
                 <a class="" href="javascript:;"><?= $v['menu_name'] ?></a>

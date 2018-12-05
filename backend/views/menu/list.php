@@ -7,13 +7,19 @@ $this->title=$title.'-论坛管理后台';
         <input class="layui-input" name="names" id="names" autocomplete="off" placeholder="菜单名称">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
+    <?php if(Yii::$app->user->can('menu/create')){ ?>
     <button class="layui-btn" data-type="add">添加</button>
+    <?php } ?>
 </div>
 <table class="layui-hide" id="LAY_table_admin" lay-filter="admin"></table>
 
 <script type="text/html" id="barAdmin">
+    <?php if(Yii::$app->user->can('menu/update')){ ?>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <?php } ?>
+    <?php if(Yii::$app->user->can('menu/delete')){ ?>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <?php } ?>
 </script>
 
 <script>
@@ -67,7 +73,7 @@ $this->title=$title.'-论坛管理后台';
                 ,{field:'menu_url', title: '菜单链接'}
                 ,{field:'created_at', title:'创建时间'}
                 ,{field:'updated_at', title:'编辑时间'}
-                ,{fixed:'right','title':'操作',width:200, align:'center',toolbar: '#barAdmin'}
+                ,{fixed:'right','title':'操作',width:180, align:'center',toolbar: '#barAdmin'}
             ]]
             ,id: 'table_admin'
             ,cellMinWidth: 80

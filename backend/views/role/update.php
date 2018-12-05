@@ -9,13 +9,13 @@ $this->title=$title.'-论坛管理后台';
     <div class="layui-form-item">
         <label class="layui-form-label">角色名</label>
         <div class="layui-input-block">
-            <input type="text" name="RoleForm[name]" lay-verify="required|menu_url" autocomplete="off" placeholder="请输入权限名" value="<?= $info['name'] ?>" class="layui-input">
+            <input type="text" name="RoleForm[name]" lay-verify="required|menu_url" autocomplete="off" placeholder="请输入角色名" value="<?= $info['name'] ?>" class="layui-input" readonly>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">角色描述</label>
         <div class="layui-input-block">
-            <input type="text" name="RoleForm[description]" lay-verify="required|menu_name" autocomplete="off" placeholder="请输入权限描述" value="<?= $info['description'] ?>" class="layui-input">
+            <input type="text" name="RoleForm[description]" lay-verify="required|menu_name" autocomplete="off" placeholder="请输入角色描述" value="<?= $info['description'] ?>" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -34,7 +34,7 @@ $this->title=$title.'-论坛管理后台';
 
         form.verify({
             menu_name:function(value){
-                var pattern =/^[\u4e00-\u9fa5]+(-)?[\u4e00-\u9fa5]+$/;
+                var pattern =/^[\u4e00-\u9fa5]+$/;
                 if(!pattern.test(value)){
                     return '角色描述仅能为中文';
                 }

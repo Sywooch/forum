@@ -110,4 +110,8 @@ class User extends ActiveRecord implements IdentityInterface{
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
+    public function getAssignment(){
+        return $this->hasOne(Assignment::className(),['user_id'=>'id'])->select('user_id,item_name');
+    }
+
 }

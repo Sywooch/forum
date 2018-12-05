@@ -27,6 +27,13 @@ class RoleForm extends Model{
         ];
     }
 
+    public function scenarios(){
+        return [
+            'create'=>['name','description'],
+            'update'=>['names','description'],
+        ];
+    }
+
     public function create(){
         if(!$this->validate()){return false;}
         $count=Role::find()->filterWhere(['type'=>1])->count();
@@ -42,15 +49,15 @@ class RoleForm extends Model{
 
     public function update(){
         if(!$this->validate()){return false;}
-        $roleModel=Role::findOne(['name'=>$this->names]);
-        $roleModel->name=$this->name;
+        $roleModel=Role::findOne(['name'=>$this->names,'type'=>1]);
         $roleModel->description=$this->description;
         $roleModel->updated_at=time();
         return $roleModel->save();
     }
 
     public function delete($id){
-        $roleModel=Role::findOne(['id'=>$id]);
+        $roleModel=Role::findOne(['id'=>$id,'type'=>1]);
+        ItemChild::deleteAll(['parent'=>$roleModel->name]);
         return $roleModel->delete();
     }
 

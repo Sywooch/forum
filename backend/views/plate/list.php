@@ -7,14 +7,20 @@ $this->title=$title.'-论坛管理后台';
         <input class="layui-input" name="name" id="name" value="" autocomplete="off" placeholder="版区名">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
+    <?php if(Yii::$app->user->can('plate/create')){ ?>
     <button class="layui-btn" data-type="add">新增</button>
+    <?php } ?>
 </div>
 
 <table class="layui-hide" id="plateTable" lay-filter="plateTable"></table>
 
 <script type="text/html" id="plateBar">
+    <?php if(Yii::$app->user->can('plate/update')){ ?>
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">编辑</a>
+    <?php } ?>
+    <?php if(Yii::$app->user->can('plate/close')){ ?>
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="close">关闭</a>
+    <?php } ?>
 </script>
 
 <script>

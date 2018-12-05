@@ -19,7 +19,6 @@ class PermissionForm extends Model{
             ['name','required','message'=>'请填写权限名'],
             ['name','match','pattern'=>'/[a-zA-z]+(\/){1}/','message'=>'权限格式错误'],
             ['description','required','message'=>'请填写权限描述'],
-            ['description','match','pattern'=>'/^[\u4e00-\u9fa5]+(-)?[\u4e00-\u9fa5]+$/','message'=>'权限描述必须为中文'],
         ];
     }
 
@@ -39,6 +38,7 @@ class PermissionForm extends Model{
     }
 
     public function create(){
+        if(!$this->validate()){return false;}
         $count=Permission::find()->where(['type'=>2])->count();
         $permissionModel=new Permission();
         $permissionModel->type=2;
@@ -52,6 +52,7 @@ class PermissionForm extends Model{
     }
 
     public function update(){
+        if(!$this->validate()){return false;}
         $permissionModel=Permission::findOne(['id'=>$this->id]);
         $permissionModel->fid=$this->fid;
         $permissionModel->name=$this->name;
@@ -61,7 +62,7 @@ class PermissionForm extends Model{
     }
 
     public function delete($id){
-       return Permission::deleteAll(['or',['=','id',$id],['=','fid',$id]]);
+       return Permission::deleteAll(['and',['or',['=','id',$id],['=','fid',$id]],['=','type',2]]);
     }
 
 }

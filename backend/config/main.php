@@ -17,7 +17,7 @@ return [
         'user' => [
             'identityClass' => 'backend\models\User',
             'enableAutoLogin' =>true,
-            'loginUrl' => ['login/index'],
+            'loginUrl' => ['login'],
             'identityCookie' => ['name' => '_identity-back', 'httpOnly' => true],
         ],
         'session' => [

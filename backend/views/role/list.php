@@ -7,14 +7,22 @@ $this->title=$title.'-论坛管理后台';
         <input class="layui-input" name="names" id="names" autocomplete="off" placeholder="角色名称">
     </div>
     <button class="layui-btn" data-type="reload">搜索</button>
+    <?php if(Yii::$app->user->can('role/create')){ ?>
     <button class="layui-btn" data-type="add">添加</button>
+    <?php } ?>
 </div>
 <table class="layui-hide" id="LAY_table_admin" lay-filter="admin"></table>
 
 <script type="text/html" id="barAdmin">
+    <?php if(Yii::$app->user->can('role/update')){ ?>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <?php } ?>
+    <?php if(Yii::$app->user->can('role/update')){ ?>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <?php } ?>
+    <?php if(Yii::$app->user->can('permission/take')){ ?>
     <a class="layui-btn layui-btn-xs" lay-event="permission">授权</a>
+    <?php } ?>
 </script>
 
 <script>
@@ -52,7 +60,7 @@ $this->title=$title.'-论坛管理后台';
                     content:"/role/update?id="+id,
                 });
             }else if(obj.event === 'permission'){
-                var id=data.id;
+                var id=data.name;
                 var index=layer.open({
                     type: 2,
                     area: ['700px','500px'],
