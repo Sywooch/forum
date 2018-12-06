@@ -7,29 +7,34 @@ return [
     'id' => 'app-api',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'api\controllers',
+    'controllerNamespace'=>'api\controllers',
     'components' => [
         'request' => [
             'cookieValidationKey' => 'zAFUBxwhE7AERYzNSLJ_gqBca059Xh7s',
-            'parsers' => [
-                'application/json' => 'yii\web\JsonParser',
+            'parsers'=>[
+                'application/json'=>'yii\web\JsonParser',
             ]
         ],
-        'user'=>[
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'loginUrl' => ['pass/login'],
-            'identityCookie' => ['name' => '_identity','httpOnly' => true],
+        'response'=>[
+            'class' => 'yii\web\Response',
+            'format'=>'json',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                if($response->data!==null&&isset($response->data['status'])){
+                    $code=$response->data['status'];
+                    $response->data = [
+                        'code'=>$code,
+                        'message'=>$response->data['message'],
+                        'data'=>[],
+                    ];
+                    $response->statusCode =$code;
+                }
+            },
         ],
-        'session'=>[
-            'name' => '_identitys',
-            'class'=>'yii\redis\Session',
-            'redis'=>[
-                'class'=>\yii\redis\Connection::class,
-                'hostname' => '127.0.0.1',
-                'port' => 6379,
-                'database' =>1,
-            ],
+        'user'=>[
+            'identityClass' => 'api\models\User',
+            'enableSession' =>false,
+            'loginUrl'=>null,
         ],
         'log'=>[
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -40,15 +45,12 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,
-            'rules' => [
-                ['class'=>'yii\rest\UrlRule','controller'=>'user'],
+            'rules'=>[
+                ['class'=>'yii\rest\UrlRule','controller'=>'user','except'=>['options']],
             ],
         ],
     ],
