@@ -89,7 +89,7 @@ class CreateForm extends Model{
         //$PostModel=new Post();
         //$PostFrequency=$PostModel->postFrequency(Yii::$app->user->identity);
         //if($PostFrequency!==true){$this->addError('title',$PostFrequency);return false;}
-        $res=Yii::$app->queue->push(new SendPostJob([
+        $res=Yii::$app->queuePost->push(new SendPostJob([
             'score'=>Yii::$app->params['postIntegral'],
             'id'=>Yii::$app->user->id,
             'pid'=>$this->plate,

@@ -63,7 +63,7 @@ class Comment extends ActiveRecord{
     }
 
     public function setCommentWork($data){
-        Yii::$app->queue->push(new SendCommentJob([
+        Yii::$app->queueComment->push(new SendCommentJob([
             'uid'=>$data['uid'],
             'type'=>$data['type'],
             'pid'=>$data['pid'],
