@@ -1,7 +1,5 @@
 <?php
-$params = array_merge(
-    require __DIR__ . '/../../common/config/params.php'
-);
+$params=require __DIR__ . '/../../common/config/params.php';
 
 return [
     'id' => 'app-frontend',
