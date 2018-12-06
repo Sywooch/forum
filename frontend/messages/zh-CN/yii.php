@@ -25,7 +25,7 @@
 return [
     'Unknown alias: -{name}' => '未知的别名: -{name}',
     '(not set)' => '(未设置)',
-    'An internal server error occurred.' => '服务器内部错误。',
+    'An internal server error occurred.' => '网站内部错误。',
     'Are you sure you want to delete this item?' => '您确定要删除此项吗？',
     'Delete' => '删除',
     'Error' => '错误',

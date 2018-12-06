@@ -7,7 +7,6 @@ use common\models\User;
 use yii\helpers\Url;
 use frontend\jobs\SendEmailJob;
 
-
 class PassForm extends Model{
 
     public $email;
@@ -30,13 +29,12 @@ class PassForm extends Model{
             ['verifyCode','string','min'=>4,'message'=>'验证码必须为4位'],
             ['email','email','message'=>'邮箱格式错误'],
             ['email','validateEmail'],
-            //['email','unique','targetClass'=>'\common\models\User','targetAttribute'=>'email','message'=>'邮箱已被注册!'],
             ['password', 'string', 'length' =>[6,12],'message'=>'密码长度须为6-12位'],
             ['password','match','pattern' =>'/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]+$/','message'=>'密码须为字母和数字组合'],
             ['repassword', 'string', 'length' => [6, 12],'message'=>'确认密码长度须为6-12位'],
             ['repassword','match','pattern'=>'/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]+$/','message'=>'确认密码须为字母和数字组合'],
             ['password','compare','compareAttribute'=>'repassword','message'=>'密码和确认密码不一致'],
-            ['verifyCode', 'captcha'],
+            ['verifyCode','captcha'],
         ];
     }
 
@@ -69,6 +67,7 @@ class PassForm extends Model{
         $user->ip=Yii::$app->request->userIP;
         $user->avatar=Yii::$app->params['default_avatar'];
         $user->created_at=time();
+        $user->update_at=time();
         $res=$user->save();
         if(!$res){$this->addError('email','注册失败!');return false;}
         $UserPostModel=new UserPost();

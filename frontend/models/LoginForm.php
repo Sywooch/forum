@@ -6,6 +6,7 @@ use yii\base\Model;
 use common\models\User;
 
 class LoginForm extends Model{
+
     public $email;
     public $password;
     public $rememberMe = false;
@@ -27,6 +28,14 @@ class LoginForm extends Model{
         ];
     }
 
+    public function attributeLabels(){
+        return [
+            'email' => '邮箱',
+            'password' => '密码',
+            'rememberMe'=>'记住我',
+        ];
+    }
+
     public function validateEmail($attribute){
         if($this->hasErrors()){return false;}
         $redis=Yii::$app->redis;
@@ -43,14 +52,6 @@ class LoginForm extends Model{
             return false;
         }
         if (!$user->validatePassword($this->password)){$this->addError($attribute, '用户名或密码错误');return false;}
-    }
-
-    public function attributeLabels(){
-        return [
-            'email' => '邮箱',
-            'password' => '密码',
-            'rememberMe'=>'记住我',
-        ];
     }
 
     /**

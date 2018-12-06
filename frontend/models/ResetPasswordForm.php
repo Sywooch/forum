@@ -2,7 +2,7 @@
 namespace frontend\models;
 
 use yii\base\Model;
-use yii\base\InvalidParamException;
+use yii\web\BadRequestHttpException;
 use common\models\User;
 
 /**
@@ -28,12 +28,14 @@ class ResetPasswordForm extends Model
      */
     public function __construct($token, $config = [])
     {
-        if (empty($token) || !is_string($token)) {
-            throw new InvalidParamException('密码重置码不能为空');
+        if(empty($token)){throw new BadRequestHttpException('请填写重置码');}
+
+        if(!is_string($token)||strpos($token,"'")!==false||strpos($token,'%')!==false){
+            throw new BadRequestHttpException('重置码格式错误');
         }
         $this->_user = User::findByPasswordResetToken($token);
         if (!$this->_user) {
-            throw new InvalidParamException('重置码错误');
+            throw new BadRequestHttpException('重置码错误');
         }
         parent::__construct($config);
     }
@@ -53,6 +55,13 @@ class ResetPasswordForm extends Model
             ['repassword', 'string', 'length' => [6, 12],'message'=>'确认密码长度须为6-12位'],
             ['repassword','match','pattern'=>'/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]+$/','message'=>'确认密码须为字母和数字组合'],
             ['password','compare','compareAttribute'=>'repassword','message'=>'密码和确认密码不一致'],
+        ];
+    }
+
+    public function attributeLabels(){
+        return [
+            'password' => '密码',
+            'repassword' => '充值密码',
         ];
     }
 

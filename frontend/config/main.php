@@ -15,10 +15,10 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'loginUrl' => ['pass/login'],
-            'identityCookie' => ['name' => '_identity','httpOnly' => true],
+            'identityCookie' => ['name' => '_identity-web','httpOnly' => true],
         ],
         'session'=>[
-            'name' => '_identitys',
+            'name' => '_identity-webs',
             'class'=>'yii\redis\Session',
             'redis'=>[
                 'class'=>\yii\redis\Connection::class,
@@ -43,8 +43,6 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'suffix'=>'.html',
-            'rules' => [
-            ],
         ],
     ],
     'params' => $params,

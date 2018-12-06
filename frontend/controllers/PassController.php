@@ -8,7 +8,6 @@ use frontend\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\helpers\Url;
 
 class PassController extends Controller{
@@ -32,11 +31,6 @@ class PassController extends Controller{
                     ],
                 ],
             ],
-            /*'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => ['logout' => ['post']],
-            ],*/
-
         ];
     }
 
@@ -44,7 +38,7 @@ class PassController extends Controller{
         return [
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'fixedVerifyCode'=>YII_ENV_TEST?'testme':null,
                 'maxLength' => 4,
                 'minLength' => 4,
             ],
@@ -53,7 +47,6 @@ class PassController extends Controller{
 
     /**
      * 登陆
-     *
      * @return mixed
      */
     public function actionLogin(){
@@ -106,7 +99,7 @@ class PassController extends Controller{
         try {
             $model = new ResetPasswordForm($token);
         }catch(InvalidParamException $e){
-            throw new BadRequestHttpException('充值码错误或已过期');
+            throw new BadRequestHttpException('激活码码错误或已过期');
         }
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
             Yii::$app->session->setFlash('success', '新密码已生效');
@@ -118,7 +111,6 @@ class PassController extends Controller{
 
     /**
      * 注销用户
-     *
      * @return mixed
      */
     public function actionLogout(){

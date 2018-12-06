@@ -5,7 +5,6 @@ use Yii;
 use yii\web\Controller;
 use common\models\User;
 use yii\filters\AccessControl;
-use yii\helpers\Url;
 
 class ActiveController extends  Controller{
 
@@ -32,9 +31,7 @@ class ActiveController extends  Controller{
         if(!$res){Yii::$app->session->setFlash('danger','激活失败!');return $this->goHome();}
         Yii::$app->session->setFlash('success','激活成功!');
         Yii::$app->user->login($user,86400);
-        return $this->redirect(Url::home());
+        return $this->goHome();
     }
-
-
 
 }

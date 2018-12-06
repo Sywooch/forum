@@ -2,7 +2,7 @@
 return [
     'aliases'=>['@bower' => '@vendor/bower-asset'],
     'vendorPath'=>dirname(dirname(__DIR__)) . '/vendor',
-    'bootstrap'=>['queue','queuePost'],
+    'bootstrap'=>['queue','queuePost','queueComment'],
     'language'=>'zh-CN',
     'components'=>[
         'db' =>[
@@ -23,7 +23,7 @@ return [
                 'username' => '2692772800@qq.com',
                 'password' => 'eqwcacxmksazdfhc',
                 'port' => '465',
-                'encryption' => 'ssl',
+                'encryption'=>'ssl',
             ],
         ],
         'cache'=>[
@@ -43,6 +43,7 @@ return [
         ],
         'queue'=>[
             'class' => \yii\queue\amqp_interop\Queue::class,
+            'as log' => \yii\queue\LogBehavior::class,
             'port' => 5672,
             'user' => 'guest',
             'password' => 'guest',
