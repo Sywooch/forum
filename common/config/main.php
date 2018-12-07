@@ -2,8 +2,9 @@
 return [
     'aliases'=>['@bower' => '@vendor/bower-asset'],
     'vendorPath'=>dirname(dirname(__DIR__)) . '/vendor',
-    'bootstrap'=>['queue','queuePost','queueComment'],
+    'bootstrap'=>['queue','queue1','queue2'],
     'language'=>'zh-CN',
+    'timeZone' => 'PRC',
     'components'=>[
         'db' =>[
             'class'=>'yii\db\Connection',
@@ -50,10 +51,11 @@ return [
             'queueName' => 'queue',
             'driver' => yii\queue\amqp_interop\Queue::ENQUEUE_AMQP_LIB,
             'ttr'=>60,
-            'attempts'=>0,
+            'attempts'=>1,
         ],
-        'queuePost'=>[
+        'queue1'=>[
             'class' => \yii\queue\amqp_interop\Queue::class,
+            'as log' => \yii\queue\LogBehavior::class,
             'port' => 5672,
             'user' => 'guest',
             'password' => 'guest',
@@ -62,8 +64,9 @@ return [
             'ttr'=>60,
             'attempts'=>0,
         ],
-        'queueComment'=>[
+        'queue2'=>[
             'class' => \yii\queue\amqp_interop\Queue::class,
+            'as log' => \yii\queue\LogBehavior::class,
             'port' => 5672,
             'user' => 'guest',
             'password' => 'guest',

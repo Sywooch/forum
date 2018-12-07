@@ -40,13 +40,12 @@ class Post extends ActiveRecord{
 
         $counts=$where?self::find()->filterWhere($where)->cache(5)->count():Yii::$app->redis->get('post_counts');
         $pag_param=[
-            'defaultPageSize' =>20,
+            'defaultPageSize'=>20,
             'totalCount' =>$counts,
         ];
         $pagination = new Pagination($pag_param);
 
         $posts=$query->select(['id','user_id','plate_id','title','view','comments','essence','is_hot','create_at'])->with(['user','plate'])->filterWhere($where)->offset($pagination->offset)->limit($pagination->limit)->orderBy($OrderBy)->cache(5)->all();
-
         return ['posts'=>$posts,'pagination'=>$pagination,'o'=>$o,'f'=>$f];
     }
 

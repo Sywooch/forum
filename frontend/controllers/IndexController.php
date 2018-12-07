@@ -23,9 +23,7 @@ class IndexController extends Controller{
         $plates=$PlateModel->getRecommend();
 
         $SignModel=new Sign();
-
         $sign_c=$SignModel->getTodaySign();
-
         return $this->render('index',['posts'=>$PostParams['posts'],'plates'=>$plates,'sign_c'=>$sign_c,'pagination'=>$PostParams['pagination'],'o'=>$PostParams['o'],'f'=>$PostParams['f']]);
     }
 
@@ -44,7 +42,6 @@ class IndexController extends Controller{
         curl_close($curl);
         return $output;
     }
-
 
 /*for($i=220;$i<230;++$i){
 $NowPage=$i;

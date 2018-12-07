@@ -28,11 +28,13 @@ return [
             ],
         ],
         'log'=>[
-            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'traceLevel' =>3,
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
+                    'logVars' => ['_GET', '_POST', '_FILES'],
                     'levels' => ['error', 'warning'],
+                    'categories' => ['application'],
                 ],
             ],
         ],

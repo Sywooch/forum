@@ -12,12 +12,12 @@ use yii\helpers\Url;
         </div>
         <div class="uk-card-body uk-padding-remove uk-text-center">
             <?php foreach($plates as $plate){ ?>
-                <div class="uk-padding-small uk-padding-remove-left uk-padding-remove-right tjbk"><a href="<?= Url::toRoute(['post/index','id'=>$plate['fid'],'s'=>$plate['id']]) ?>"><?= Html::encode($plate['name']) ?></a></div>
+                <div class="uk-padding-small uk-padding-remove-left uk-padding-remove-right tjbk"><a href="<?= Url::toRoute(['/post','id'=>$plate['fid'],'s'=>$plate['id']]) ?>"><?= Html::encode($plate['name']) ?></a></div>
             <?php } ?>
             <div style="clear:both;"></div>
         </div>
         <div class="uk-card-footer uk-padding-small uk-text-center">
-            <a href="<?= Url::toRoute(['plate/index']) ?>" class="uk-button uk-button-text">查看更多板块>>></a>
+            <a href="<?= Url::toRoute(['/plate']) ?>" class="uk-button uk-button-text">查看更多板块>>></a>
         </div>
     </div>
 

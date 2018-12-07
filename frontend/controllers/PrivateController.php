@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use Yii;
 use yii\web\Controller;
 use common\models\User;
 use frontend\models\Prive;
@@ -8,13 +9,11 @@ use frontend\models\Prive;
 class PrivateController extends Controller{
 
     public function actionSend(){
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        //判断是否登陆
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
         $id=\Yii::$app->user->identity;
-        if(!$id){
-            return ['code'=>0,'msg'=>'请登陆后操作!','data'=>''];
-        }
-        $data=\Yii::$app->request->post();
+        if(!$id){return ['code'=>0,'msg'=>'请登陆后操作!','data'=>''];}
+        $data=Yii::$app->request->post();
         if(!isset($data['id'])||!isset($data['content'])){
             return ['code'=>0,'msg'=>'请填写私信内容!','data'=>''];
         }
@@ -33,24 +32,21 @@ class PrivateController extends Controller{
         if(strpos($data['content'],'%')!==false){
             return ['code'=>0,'msg'=>'私信内容不得含有特殊字符!','data'=>''];
         }
-        if(strlen($data['content'])>90){
-            return ['code'=>0,'msg'=>'私信内容不得超过30字!','data'=>''];
+        if(strpos($data['content'],'iframe')!==false){
+            return ['code'=>0,'msg'=>'私信内容不得含有特殊字符!','data'=>''];
         }
-        $binf=User::find()->where(['id'=>$data['id']])->scalar();
-        if(empty($binf)){
-            return ['code'=>0,'msg'=>'发送人不存在!','data'=>''];
+        if(strlen($data['content'])>60){
+            return ['code'=>0,'msg'=>'私信内容不得超过20字!','data'=>''];
         }
-        if(\Yii::$app->user->id==$data['id']){
-            return ['code'=>0,'msg'=>'不能给自己发送私信!','data'=>''];
-        }
-        $last=Prive::find()->select('created_t')->where(['and',['users_id'=>45],['user_id'=>46]])->orderBy(['id'=>SORT_DESC])->scalar();
+        $binf=User::find()->where(['id'=>$data['id']])->count();
+        if(empty($binf)){return ['code'=>0,'msg'=>'发送人不存在!','data'=>''];}
+        if(Yii::$app->user->id==$data['id']){return ['code'=>0,'msg'=>'不能给自己发送私信!','data'=>''];}
+        $last=Prive::find()->select('created_t')->where(['and',['users_id'=>Yii::$app->user->id],['user_id'=>$data['id']]])->orderBy(['id'=>SORT_DESC])->scalar();
         if(!empty($last)){
-            if(time()-$last<60){
-                return ['code'=>0,'msg'=>'不要过于频发的发私信!','data'=>''];
-            }
+            if(time()-$last<60){return ['code'=>0,'msg'=>'不要过于频发的发私信!','data'=>''];}
         }
         $priv=new Prive();
-        $priv->users_id=\Yii::$app->user->id;
+        $priv->users_id=Yii::$app->user->id;
         $priv->user_id=$data['id'];
         $priv->content=$data['content'];
         $priv->created_t=time();

@@ -11,5 +11,4 @@ class PlateController extends Controller{
         return $this->render('index',['plates'=>$plates]);
     }
 
-
 }

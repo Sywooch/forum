@@ -1,8 +1,7 @@
 <?php
 use yii\helpers\Url;
 use yii\helpers\Html;
-$request = \Yii::$app->request;
-$pathInfo=$request->pathInfo;
+$route=\Yii::$app->controller->getRoute();
 ?>
 <div class="tm-page">
     <div class="tm-header-mobile uk-hidden@m">
@@ -26,11 +25,11 @@ $pathInfo=$request->pathInfo;
                         <div>
                             <div class="uk-panel">
                                 <ul class="uk-nav uk-nav-primary uk-nav-center">
-                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home"><a href="<?= Url::home()?>">首页</a></li>
-                                    <li class="uk-active  menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-20 current_page_item"><a href="<?= Url::toRoute(['plate/index'])?>">板块</a></li>
+                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home  <?php if($route=='index/index'){ ?> uk-active <?php } ?>"><a href="<?= Url::home()?>">首页</a></li>
+                                    <li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-20 current_page_item <?php if($route=='plate/index'){ ?> uk-active <?php } ?>"><a href="<?= Url::toRoute(['/plate'])?>">板块</a></li>
                                     <?php if(\Yii::$app->user->isGuest){ ?>
-                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page"><a href="<?= Url::toRoute(['pass/login'])?>">登陆</a></li>
-                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page"><a href="<?= Url::toRoute(['pass/register'])?>">注册</a></li>
+                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page <?php if($route=='pass/login'){ ?> uk-active <?php } ?> "><a href="<?= Url::toRoute(['pass/login'])?>">登陆</a></li>
+                                    <li class=" menu-item menu-item-type-post_type menu-item-object-page <?php if($route=='pass/register'){ ?> uk-active <?php } ?> "><a href="<?= Url::toRoute(['pass/register'])?>">注册</a></li>
 
                                     <?php }else{ ?>
                                     <li class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children uk-parent">
@@ -67,19 +66,22 @@ $pathInfo=$request->pathInfo;
                         </div>
                         <div class="uk-navbar-center">
                             <ul class="uk-navbar-nav">
-                                <li <?php if($pathInfo==''||$pathInfo=='index/index.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::home()?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">首页</a></li>
-                                <li <?php if($pathInfo=='plate/index.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['plate/index'])?>">板块</a></li>
-                                <li <?php if($pathInfo=='pass/login.html'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['pass/login'])?>">关于我们</a></li>
+                                <li <?php if($route=='index/index'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::home()?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">首页</a></li>
+                                <li <?php if($route=='plate/index'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['/plate'])?>">板块</a></li>
+                                <li <?php if($route=='pass/login'){ ?> class="uk-active" <?php } ?> ><a href="<?= Url::toRoute(['pass/login'])?>">关于我们</a></li>
                             </ul>
                         </div>
                         <div class="uk-navbar-right">
                             <ul class="uk-navbar-nav">
-
                                 <?php if(\Yii::$app->user->isGuest){ ?>
                                 <li><a href="<?= Url::toRoute(['pass/login'])?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">登陆</a></li>
                                 <li><a href="<?= Url::toRoute(['pass/register'])?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">注册</a></li>
                                 <?php }else{ ?>
-                                <li class="uk-parent"><a href="#" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children" aria-expanded="false"><img class="uk-border-circle" width="40" height="40" src="<?= \Yii::$app->user->identity->avatar ?>"><?php if(\Yii::$app->user->identity->username){ echo \Yii::$app->user->identity->username; }else{ echo \Yii::$app->user->identity->email; } ?></a>
+                                <li class="uk-parent">
+                                    <a href="#" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children" aria-expanded="false">
+                                        <img class="uk-border-circle" style="width:40px;height:40px;margin-right:5px;" src="<?= \Yii::$app->user->identity->avatar ?>">
+                                        <?php if(\Yii::$app->user->identity->username){ echo \Yii::$app->user->identity->username; }else{ echo \Yii::$app->user->identity->email; } ?>
+                                    </a>
                                     <div class="uk-navbar-dropdown uk-navbar-dropdown-dropbar" style="left: 1458.94px; top: 106px;">
                                         <div class="uk-navbar-dropdown-grid uk-child-width-1-1 uk-grid uk-grid-stack" uk-grid="">
                                             <div class="uk-first-column">

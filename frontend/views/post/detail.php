@@ -8,8 +8,8 @@ $this->title=Html::encode($post['title']).'--BBS论坛';
     <div class="uk-width-1-1@m uk-width-3-4@l">
        <div class="uk-card uk-card-default uk-card-body uk-padding-small" style="min-height:300px;">
             <ul class="uk-breadcrumb">
-                <li><a href="<?= Url::toRoute(['index/index']) ?>">首页</a></li>
-                <li><a href="<?= Url::toRoute(['plate/index']) ?>">板块</a></li>
+                <li><a href="<?= Url::home() ?>">首页</a></li>
+                <li><a href="<?= Url::toRoute(['/plate']) ?>">板块</a></li>
                 <li><span><?= Html::encode($post['plate']['name']) ?></span></a></li>
             </ul>
             <div class="uk-flex">
@@ -72,7 +72,7 @@ $this->title=Html::encode($post['title']).'--BBS论坛';
             <?php foreach($comments as $k=>$comment){ ?>
 
             <div class="uk-flex uk-margin-small-top">
-                <div class="uk-width-auto"><img src="<?= $comment['user']['avatar']?>" width="50" height="50"/></div>
+                <div class="uk-width-auto"><img src="<?= $comment['user']['avatar']?>" style="width:45px;height:45px;"/></div>
                 <div class="uk-width-expand uk-margin-small-left">
                     <div class="uk-flex">
                         <div class="uk-width-auto uk-text-small uk-text-muted"><a href="<?= Url::toRoute(['user/index','id'=>$comment['user']['id']]) ?>"><?php if($comment['user']['username']){echo $comment['user']['username'];}else{echo $comment['user']['email'];} ?></a><a href="<?= Url::toRoute(['post/detail','id'=>$id,'author'=>$comment['user']['id']]) ?>" class="uk-margin-min-left uk-visible@m">只看该作者</a><span class="uk-margin-min-left"><?= date("Y-m-d H:i",$comment['create_at'])?></span></div>
@@ -97,7 +97,7 @@ $this->title=Html::encode($post['title']).'--BBS论坛';
                 <div class="uk-card-header uk-padding-small">
                     <div class="uk-grid-small uk-flex-middle" uk-grid>
                         <div class="uk-width-auto">
-                            <img class="uk-border-circle" width="60" height="60" src="<?= $post['user']['avatar']?>">
+                            <img class="uk-border-circle" style="width:45px;height:45px;" src="<?= $post['user']['avatar']?>">
                         </div>
                         <div class="uk-width-expand">
                             <a href="#" class="uk-margin-remove-bottom"><?php if($post['user']['username']){ echo Html::encode($post['user']['username']) ;}else{echo $post['user']['email']; } ?></a>

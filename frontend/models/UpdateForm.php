@@ -125,9 +125,7 @@ class UpdateForm extends Model{
     }
 
     public function save($id){
-        if(!$this->validate()){
-            return false;
-        }
+        if(!$this->validate()){return false;}
         $user=User::findOne($id);
         $user->username=$this->username;
         $user->intro=$this->intro;
@@ -135,4 +133,12 @@ class UpdateForm extends Model{
         $user->sex=$this->sex;
         return $user->save()?true:false;
     }
+
+    public function reset($id){
+        if(!$this->validate()){return false;}
+        $user=User::findOne($id);
+        $user->setPassword($this->new);
+        return $user->save()?true:false;
+    }
+
 }

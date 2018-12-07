@@ -57,6 +57,10 @@ class CreateForm extends Model{
         if(strpos($this->title,"'")!==false){
             return $this->addError($attribute,'标题不得含有特殊字符');
         }
+        if(strpos($this->content,'iframe')!==false){
+            $this->addError($attribute,'标题不得含有特殊字符');
+            return false;
+        }
         $this->SensitiveWord($this->title,$attribute);
     }
 
@@ -89,7 +93,7 @@ class CreateForm extends Model{
         //$PostModel=new Post();
         //$PostFrequency=$PostModel->postFrequency(Yii::$app->user->identity);
         //if($PostFrequency!==true){$this->addError('title',$PostFrequency);return false;}
-        $res=Yii::$app->queuePost->push(new SendPostJob([
+        $res=Yii::$app->queue1->push(new SendPostJob([
             'score'=>Yii::$app->params['postIntegral'],
             'id'=>Yii::$app->user->id,
             'pid'=>$this->plate,

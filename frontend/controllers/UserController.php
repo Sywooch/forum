@@ -32,7 +32,6 @@ class UserController extends Controller{
         $LevelInfo=$LevelModel->getAppellation($user_info['level']);
         $all_params['sign']=Sign::find()->filterWhere(['user_id'=>$id])->cache(10)->count();
 
-        //发帖信息
         $all_params['user_info']=$user_info;
         $all_params['appellation']=$LevelInfo['appellation'];
 
@@ -154,8 +153,12 @@ class UserController extends Controller{
                 $all_params['posts']=$user_info;
                 break;
             case 'pass_reset':
+                if(Yii::$app->user->id!=$id){
+                    Yii::$app->session->setFlash('danger','您没有权限访问!');
+                    return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
+                }
                 $model=new UpdateForm(['scenario'=>'pass']);
-                if($model->load(\Yii::$app->request->post())&&$model->save(\Yii::$app->user->id)){
+                if($model->load(Yii::$app->request->post())&&$model->reset(\Yii::$app->user->id)){
                     Yii::$app->session->setFlash('success','修改成功');
                     return $this->redirect(Url::toRoute(['user/index','id'=>$id]));
                 }
@@ -167,7 +170,7 @@ class UserController extends Controller{
     }
 
     public function actionUpdate($id){
-        $model=new UpdateForm();
+        $model=new UpdateForm(['scenario'=>'set']);
         if($model->load(\Yii::$app->request->post())&&$model->save($id)){
             Yii::$app->session->setFlash('success','修改成功');
             return $this->redirect(Url::toRoute(['user/index','id'=>$id,'t'=>'set']));

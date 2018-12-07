@@ -5,10 +5,10 @@ use yii\helpers\Url;
 <div class="uk-flex uk-flex-column">
     <div class="uk-card uk-card-default uk-card-body uk-padding-small">
         <div class="uk-flex">
-            <div class="uk-width-auto" style="margin:auto 0px;"><img src="<?= $user_info['avatar'] ?>" width="80" height="80"/></div>
+            <div class="uk-width-auto" style="margin:auto 0px;"><img src="<?= $user_info['avatar'] ?>" style="width:60px;height:60px;" /></div>
             <div class="uk-width-expand uk-margin-small-left">
                 <div class="uk-flex">
-                    <div class="uk-width-auto"><h4 class="uk-margin-remove-bottom"><?php if($user_info['username']){echo Html::encode($user_info['username']);}else{ echo Html::encode($user_info['email']);} ?>(<?= $appellation?>)</div>
+                    <div class="uk-width-auto"><h4 class="uk-margin-remove-bottom"><?php if($user_info['username']){echo Html::encode($user_info['username']);}else{ echo Html::encode($user_info['email']);} ?></div>
                     <div class="uk-width-expand uk-text-small uk-text-muted uk-text-right"><?php if(\Yii::$app->user->id!=$id){?> <a href="javascript:void(0)" class="private" uk-toggle="target:#modal-prive">发消息</a> <?php } ?></div>
                 </div>
                 <div class="uk-text-small uk-column-1-4 uk-column-divider uk-text-center uk-margin-small-top">

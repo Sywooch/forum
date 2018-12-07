@@ -12,12 +12,18 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'categories' => ['application'],
+                    'logVars' => [],
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'warning'],
+                    'categories' => ['yii\queue\Queue'],
+                    'logVars' => [],
+                    'logFile' => '@runtime/logs/queue.log',
                 ],
             ],
-        ],
-        'authManager'=>[
-            'class' => 'yii\rbac\DbManager',
-        ],
+        ]
     ],
     'params' => $params,
 ];

@@ -52,9 +52,9 @@ use yii\helpers\Url;
     <div class="uk-width-1-5 uk-text-center">
         <div class="layui-upload">
             <div class="layui-upload-list">
-                <img class="uk-comment-avatar" id="avatar" src="<?= $posts['avatar'] ?>" width="90" height="90" />
+                <img class="uk-comment-avatar" id="avatar" src="<?= $posts['avatar'] ?>" style="width:90px;height:90px;" />
             </div>
-            <button type="button" class="layui-btn" id="avatarUp">上传图片</button>
+            <button type="button" class="uk-button uk-button-default uk-width-1-2" id="avatarUp">上传</button>
             <p id="errText"></p>
         </div>
     </div>
