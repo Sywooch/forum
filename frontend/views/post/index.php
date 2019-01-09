@@ -5,7 +5,7 @@ use yii\widgets\LinkPager;
 $this->title=$far_plate['name'].'-BBS论坛';
 ?>
 <div uk-grid>
-    <div class="uk-width-1-1@m uk-width-3-4@l">
+    <div class="uk-width-1-1@m uk-width-3-4@l uk-margin-small-bottom">
         <div class="uk-card uk-card-default uk-card-body uk-padding-small uk-margin-bottom">
             <div class="uk-flex">
                 <div class="uk-width-auto"><img src="<?= $far_plate['img'] ?>" width="80" height="80"/></div>

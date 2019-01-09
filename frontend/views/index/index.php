@@ -5,7 +5,7 @@ use yii\widgets\LinkPager;
 $this->title='首页-BBS论坛';
 ?>
 <div uk-grid>
-    <div class="uk-width-1-1@m uk-width-3-4@l">
+    <div class="uk-width-1-1@m uk-width-3-4@l uk-margin-small-bottom">
         <div class="uk-card uk-card-default uk-card-body uk-padding-small">
             <div class="uk-flex uk-flex-middle uk-background-muted">
                 <div class="uk-width-1-3">

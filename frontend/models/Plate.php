@@ -56,7 +56,8 @@ class Plate extends ActiveRecord{
     }
 
     public function getFatherSon($plates){
-        $bz_id='';
+        $bz_id=[];
+        $sid=[];
         foreach($plates as $k=>$v){
             if($v['fid']==0){
                 $far_plate=array('id'=>$v['id'],'name'=>$v['name'],'img'=>$v['img'],'today'=>$v['today'],'totals'=>$v['totals']);

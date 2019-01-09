@@ -62,7 +62,7 @@ use yii\helpers\Url;
                 </ul>
             </div>
         </div>
-        <div class="uk-width-1-1@m uk-width-4-5@l">
+        <div class="uk-width-1-1@m uk-width-4-5@l uk-margin-small-bottom">
             <div class="uk-card uk-card-default uk-card-body uk-padding-small">
                 <?= $this->render("_$t",['counts'=>isset($counts)?$counts:'','countss'=>isset($countss)?$countss:'','posts'=>isset($posts)?$posts:'','pagination'=>isset($pagination)?$pagination:'','post_v'=>isset($counts_v)?$counts_v:'','model'=>isset($model)?$model:'','id'=>$id,'user_info'=>isset($user_info)?$user_info:'']) ?>
             </div>

@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use frontend\models\Post;
+use frontend\models\Posts;
 use frontend\models\Plate;
 use frontend\models\Sign;
 
@@ -26,6 +27,15 @@ class IndexController extends Controller{
         $sign_c=$SignModel->getTodaySign();
         return $this->render('index',['posts'=>$PostParams['posts'],'plates'=>$plates,'sign_c'=>$sign_c,'pagination'=>$PostParams['pagination'],'o'=>$PostParams['o'],'f'=>$PostParams['f']]);
     }
+
+
+    public function actionSearch(){
+        $GetsParams=Yii::$app->request->get();
+        $PostsModel=new Posts();
+        $PostParams=$PostsModel->getSearch($GetsParams);
+        return $this->render('search',['posts'=>$PostParams['posts'],'pagination'=>$PostParams['pagination'],'search'=>$PostParams['search']]);
+    }
+
 
     public function posturl($url,$data){
         $data  = json_encode($data);

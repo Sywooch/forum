@@ -72,6 +72,15 @@ $route=\Yii::$app->controller->getRoute();
                             </ul>
                         </div>
                         <div class="uk-navbar-right">
+                            <div>
+                                <a class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" action="<?= Url::toRoute(['index/search']) ?>">
+                                        <input class="uk-search-input" name="search" type="search" placeholder="搜索..." autofocus>
+                                    </form>
+                                </div>
+                            </div>
+
                             <ul class="uk-navbar-nav">
                                 <?php if(\Yii::$app->user->isGuest){ ?>
                                 <li><a href="<?= Url::toRoute(['pass/login'])?>" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home">登陆</a></li>

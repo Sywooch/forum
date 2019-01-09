@@ -13,38 +13,26 @@ class Posts extends ActiveRecord{
         return '{{%posts}}';
     }
 
-    public function getAll($gets){
+    public function getSearch($gets){
         $query=self::find();
-
         $where=[];
-        $o=ArrayHelper::getValue($gets, 'o','');
-        if(empty($o)){$OrderBy=['id'=>SORT_DESC];}
-        if($o&&in_array($o,array(1,2))){
-            $pag_param['params']['o']=$o;
-            switch($o){
-                case '1':
-                    $OrderBy['view']=SORT_DESC;
-                    break;
-                case '2':
-                    $OrderBy['comments']=SORT_DESC;
-                    break;
-            }
+        $search=ArrayHelper::getValue($gets, 'search','');
+        if(!empty($search)){
+            //$where=['or',['title'=>$search],['content'=>$search]];
+            $where=['title'=>$search];
+            $pag_param['params']['search']=$search;
         }
-        $f=ArrayHelper::getValue($gets, 'f','');
-        if($f&&in_array($f,array(1,2))){
-            $pag_param['params']['f']=$f;
-            $where=$f=='1'?['is_hot'=>1]:['essence'=>1];
-        }
-        $counts=$where?self::find()->filterWhere($where)->cache(30)->count():Yii::$app->redis->get('post_counts');
+        $counts=$where?$query->filterWhere($where)->count():$query->count();
+        if($counts>10000){$counts=10000;}
+
         $pag_param=[
-            'defaultPageSize' =>20,
+            'defaultPageSize'=>20,
             'totalCount' =>$counts,
         ];
         $pagination = new Pagination($pag_param);
-
-        $posts=$query->fields(['id','user_id','plate_id','title','view','comments','essence','is_hot','create_at'])->with(['user','plate'])->filterWhere($where)->offset($pagination->offset)->limit($pagination->limit)->orderBy($OrderBy)->all();
-
-        return ['posts'=>$posts,'pagination'=>$pagination,'o'=>$o,'f'=>$f];
+        $posts=$query->fields(['id','user_id','plate_id','title','view','comments','essence','is_hot','create_at'])->with(['user','plate'])->filterWhere($where)->offset($pagination->offset)->limit($pagination->limit)->orderBy(['id'=>SORT_DESC])->all();
+        //print_r($posts);exit;
+        return ['posts'=>$posts,'pagination'=>$pagination,'search'=>$search];
     }
 
     public function getDetail($gets){
@@ -106,7 +94,7 @@ class Posts extends ActiveRecord{
                     'id'=>['type' =>'integer'],
                     'user_id'=> ['type' => 'integer'],
                     'plate_id'=> ['type' => 'integer'],
-                    'title' => ['type' => 'string'],
+                    'title' => ['type' => 'string','analyzer'=>'ik_smart','search_analyzer'=>'ik_smart'],
                     'content' => ['type' => 'string'],
                     'file' => ['type' => 'string'],
                     'view' => ['type' => 'byte'],

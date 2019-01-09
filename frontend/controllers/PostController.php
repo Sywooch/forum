@@ -35,6 +35,7 @@ class PostController extends Controller{
     public function actionIndex($id){
         $PlateModel=new Plate();
         $plates=$PlateModel->getAllSon($id);
+
         if(empty($plates)){Yii::$app->session->setFlash('warning','无此板块');return $this->goHome();}
 
         $FatherSonArr=$PlateModel->getFatherSon($plates);
